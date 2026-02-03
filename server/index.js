@@ -1,20 +1,31 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 
-// Health Check
-app.get('/', (req, res) => {
-    res.send('SpaceScope 360 Server is Active 🚀');
+app.get("/api/health", (_, res) => {
+  res.json({ ok: true, service: "SpaceScope-360 API" });
 });
 
-// TODO: Add NASA API Proxies here
-
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.get("/api/sky-watcher/status", (_, res) => {
+  res.json({
+    issVisible: true,
+    nearbySatellites: 12,
+    alert: "green",
+    message: "All clear"
+  });
 });
+
+app.get("/api/earth-guardian/alerts", (_, res) => {
+  res.json({
+    fires: [{ lat: 19.076, lng: 72.8777, level: "high" }],
+    floods: [],
+    languageSupport: ["hi", "mr"]
+  });
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log(`API running on http://localhost:${port}`));

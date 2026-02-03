@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import AppShell from "./layouts/AppShell";
+import GlobeScene from "./components/Globe/GlobeScene";
+import SceneOverlay from "./components/SceneOverlay";
+import useScrollProgress from "./hooks/useScrollProgress";
+import SkyWatcher from "./pages/SkyWatcher";
+import EarthGuardian from "./pages/EarthGuardian";
+import CosmicClassroom from "./pages/CosmicClassroom";
+import Footer from "./components/Footer";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const progress = useScrollProgress();
+
+  // visibility windows for modules
+  const showSky = progress >= 0.28 && progress <= 0.60; // space/orbit
+  const showGuardian = progress > 0.60 && progress <= 0.84; // earth surface
+  const showClassroom = progress > 0.84; // deep layer
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <AppShell>
+    
+      <div className="nebula" />
+      <div className="grain" />
 
-export default App
+      <GlobeScene progress={progress} />
+
+      <SceneOverlay progress={progress} />
+
+      <div className="fixed inset-0 pointer-events-none">
+        <SkyWatcher visible={showSky} />
+        <EarthGuardian visible={showGuardian} />
+        <CosmicClassroom visible={showClassroom} />
+      </div>
+
+      <main>
+        <section className="h-[120vh]" />
+        <section className="h-[140vh]" />
+        <section className="h-[140vh]" />
+        <section id="missions" className="h-[120vh]" />
+        <section id="about" className="h-[120vh]" />
+
+        <Footer />
+      </main>
+    </AppShell>
+  );
+}
