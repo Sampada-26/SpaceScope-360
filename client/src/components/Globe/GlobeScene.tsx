@@ -58,7 +58,7 @@ export default function GlobeScene({ progress }: { progress: number }) {
   }, [progress]);
 
   return (
-    <div className="fixed inset-0 -z-10">
+    <div className="fixed inset-0">
       <Canvas
         camera={{ position: [1.35, 0.65, 9.8], fov: 42 }}
         dpr={[1, 1.75]}

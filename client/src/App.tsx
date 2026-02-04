@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <AppShell>
-    
+
       <div className="nebula" />
       <div className="grain" />
 
@@ -31,7 +31,7 @@ export default function App() {
         <CosmicClassroom visible={showClassroom} />
       </div>
 
-      <main>
+      <main className="-z-10">
         <section className="h-[120vh]" />
         <section className="h-[140vh]" />
         <section className="h-[140vh]" />
