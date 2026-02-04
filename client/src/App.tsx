@@ -10,28 +10,26 @@ import Footer from "./components/Footer";
 export default function App() {
   const progress = useScrollProgress();
 
-  // visibility windows for modules
-  const showSky = progress >= 0.28 && progress <= 0.60; // space/orbit
-  const showGuardian = progress > 0.60 && progress <= 0.84; // earth surface
-  const showClassroom = progress > 0.84; // deep layer
+  const showSky = progress >= 0.28 && progress <= 0.60;
+  const showGuardian = progress > 0.60 && progress <= 0.84;
+  const showClassroom = progress > 0.84 && progress < 0.90;
+
 
   return (
     <AppShell>
-
       <div className="nebula" />
       <div className="grain" />
 
       <GlobeScene progress={progress} />
-
       <SceneOverlay progress={progress} />
 
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="fixed inset-0 pointer-events-none z-20">
         <SkyWatcher visible={showSky} />
         <EarthGuardian visible={showGuardian} />
         <CosmicClassroom visible={showClassroom} />
       </div>
 
-      <main className="-z-10">
+      <main className="relative z-10">
         <section className="h-[120vh]" />
         <section className="h-[140vh]" />
         <section className="h-[140vh]" />
