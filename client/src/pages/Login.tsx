@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
-import { useUi } from "../context/UiContext";
 // GlassButton import removed
 
 const Login = () => {
-    const { t } = useUi();
-
     const handleGoogleLogin = () => {
         // Redirect to Backend Auth via Proxy
         window.location.href = "/auth/google";
@@ -25,8 +22,8 @@ const Login = () => {
             >
                 <div className="mb-8">
                     <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-glow mb-4" />
-                    <h2 className="text-3xl font-bold tracking-tight mb-2">{t("Welcome Back")}</h2>
-                    <p className="text-white/60">{t("Access the SpaceScope Command Center")}</p>
+                    <h2 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h2>
+                    <p className="text-white/60">Access the SpaceScope Command Center</p>
                 </div>
 
                 <div className="space-y-4">
@@ -41,7 +38,7 @@ const Login = () => {
                             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                             <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        {t("Continue with Google")}
+                        Continue with Google
                     </button>
 
                     <div className="relative py-4">
@@ -49,9 +46,7 @@ const Login = () => {
                             <span className="w-full border-t border-white/10"></span>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-[#0B0E14] px-2 text-white/40">
-                                {t("Secure Access")}
-                            </span>
+                            <span className="bg-[#0B0E14] px-2 text-white/40">Secure Access</span>
                         </div>
                     </div>
                 </div>
