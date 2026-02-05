@@ -1,6 +1,7 @@
 import { MapPin, Search } from "lucide-react";
 import worldMap from "../../assets/world-map.svg";
 import Footer from "../../components/Footer";
+import { useUi } from "../../context/UiContext";
 
 const spots = [
   {
@@ -30,6 +31,8 @@ const spots = [
 ];
 
 export default function StargazingSpots() {
+  const { t } = useUi();
+
   return (
     <div className="min-h-screen pt-28 pb-16 px-4 md:px-8">
       <div className="nebula" />
@@ -38,25 +41,29 @@ export default function StargazingSpots() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
+              {t("Sky Watcher")}
+            </p>
             <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
-              Stargazing Spots
+              {t("Stargazing Spots")}
             </h1>
             <p className="text-white/70 mt-2 max-w-xl">
-              Filter by region, season, and light pollution to discover pristine observation zones.
+              {t(
+                "Filter by region, season, and light pollution to discover pristine observation zones."
+              )}
             </p>
           </div>
 
           <button className="glass px-4 py-2 rounded-full text-sm flex items-center gap-2 border border-white/10 hover:border-white/30 transition">
             <Search className="h-4 w-4 text-cyan-200/80" />
-            Run Search
+            {t("Run Search")}
           </button>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_2fr]">
           <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
             <div>
-              <label className="text-xs text-white/60">Country</label>
+              <label className="text-xs text-white/60">{t("Country")}</label>
               <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Chile</option>
                 <option>India</option>
@@ -65,7 +72,7 @@ export default function StargazingSpots() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-white/60">State</label>
+              <label className="text-xs text-white/60">{t("State")}</label>
               <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Antofagasta</option>
                 <option>Ladakh</option>
@@ -74,7 +81,7 @@ export default function StargazingSpots() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-white/60">Taluka</label>
+              <label className="text-xs text-white/60">{t("Taluka")}</label>
               <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Calama</option>
                 <option>Leh</option>
@@ -83,23 +90,23 @@ export default function StargazingSpots() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-white/60">Light Pollution Level</label>
+              <label className="text-xs text-white/60">{t("Light Pollution Level")}</label>
               <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option>{t("Low")}</option>
+                <option>{t("Medium")}</option>
+                <option>{t("High")}</option>
               </select>
             </div>
             <div>
-              <label className="text-xs text-white/60">Best Season</label>
+              <label className="text-xs text-white/60">{t("Best Season")}</label>
               <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
-                <option>Winter</option>
-                <option>Summer</option>
-                <option>Monsoon</option>
+                <option>{t("Winter")}</option>
+                <option>{t("Summer")}</option>
+                <option>{t("Monsoon")}</option>
               </select>
             </div>
             <button className="w-full mt-2 rounded-xl bg-gradient-to-r from-cyan-400/80 to-blue-500/80 py-2 text-sm font-semibold text-white hover:from-cyan-300/80 hover:to-blue-400/80 transition glow-ring">
-              Search Spots
+              {t("Search Spots")}
             </button>
           </div>
 
@@ -111,7 +118,7 @@ export default function StargazingSpots() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-4 left-4 glass rounded-full px-4 py-2 text-xs border border-white/10 flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-cyan-200/80" />
-                  Global visibility zones (mock)
+                  {t("Global visibility zones (mock)")}
                 </div>
               </div>
             </div>
@@ -126,9 +133,11 @@ export default function StargazingSpots() {
                     </div>
                     <div className="text-xs text-cyan-200/80">⭐ {spot.rating}</div>
                   </div>
-                  <div className="mt-3 text-xs text-white/70">Light pollution: {spot.pollution}</div>
+                  <div className="mt-3 text-xs text-white/70">
+                    {t("Light pollution")}: {t(spot.pollution)}
+                  </div>
                   <button className="mt-4 text-xs px-3 py-2 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition">
-                    View Details
+                    {t("View Details")}
                   </button>
                 </div>
               ))}
