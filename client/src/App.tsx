@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import AppShell from "./layouts/AppShell";
 import GlobeScene from "./components/Globe/GlobeScene";
 import SceneOverlay from "./components/SceneOverlay";
@@ -7,20 +8,13 @@ import EarthGuardianOverlay from "./pages/EarthGuardianOverlay";
 import CosmicClassroomSection from "./pages/CosmicClassroomSection";
 import Footer from "./components/Footer";
 
+=======
+import Landing from "./pages/Landing";
+>>>>>>> b1eca064a67de893756543eae0609fda03f9d212
 
 export default function App() {
-  const progress = useScrollProgress();
-
-
-  // Define ranges. Tip: For testing, you can change showClassroom to 'true'
-  const showSky = progress >= 0.28 && progress <= 0.60;
-  const showGuardian = progress > 0.60 && progress <= 0.84;
-
-  // Classroom shows at the end (0.84 to bottom)
-  const showClassroom = progress > 0.84;
-
-
   return (
+<<<<<<< HEAD
     <AppShell>
       {/* Visual background layers */}
       <div className="nebula" />
@@ -39,23 +33,16 @@ export default function App() {
 
         {/* Pass visibility prop. SpaceAcademy has z-index 100 to stay on top */}
         <CosmicClassroomSection visible={showClassroom} />
+=======
+    <div className="relative min-h-screen bg-black text-white">
+      <div className="relative z-10">
+        <Landing />
+>>>>>>> b1eca064a67de893756543eae0609fda03f9d212
       </div>
-
-
-      <main className="relative z-10">
-        {/* These provide the scroll "distance" */}
-        <section className="h-[120vh]" />
-        <section className="h-[140vh]" />
-        <section className="h-[140vh]" />
-
-        {/* This ID usually matches navigation buttons */}
-        <section id="missions" className="h-[120vh]" />
-        <section id="about" className="h-[120vh]" />
-
-
-        <Footer />
-      </main>
-    </AppShell>
+    </div>
   );
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b1eca064a67de893756543eae0609fda03f9d212

@@ -12,7 +12,6 @@
 :root {
   color-scheme: dark;
 }
-
 html,
 body,
 #root {
@@ -96,4 +95,16 @@ body {
 
 .glow-ring {
   box-shadow: 0 0 24px rgba(120, 180, 255, 0.35), 0 0 60px rgba(90, 120, 255, 0.25);
+}
+
+/* Dark dropdown styling */
+select {
+  background-color: rgba(10, 14, 24, 0.95);
+  color: #e6edf6;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+select option {
+  background-color: #0b111a;
+  color: #e6edf6;
 }

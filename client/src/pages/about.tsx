@@ -1,7 +1,6 @@
-import GlassCard from "../components/GlassCard";
-import Footer from "../components/Footer";
 
-import aboutImage from "../assets/aboutus.jpg";
+import Footer from "../components/Footer";
+import { useUi } from "../context/UiContext";
 
 type Hotspot = { x: number; y: number; size?: "sm" | "md" | "lg" };
 
@@ -51,20 +50,23 @@ function Dot({ x, y, size = "md" }: Hotspot) {
 }
 
 function GlobalCoverage() {
+  const { t } = useUi();
+
   return (
     <section className="rounded-3xl border border-white/10 bg-black px-6 md:px-8 py-8">
       <div className="text-center">
         <div className="text-white/60 text-xs tracking-[0.35em] uppercase">
-          Global Coverage
+          {t("Global Coverage")}
         </div>
 
         <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-white">
-          Visibility across the Globe
+          {t("Visibility across the Globe")}
         </h2>
 
         <p className="mt-3 text-white/70 text-sm max-w-xl mx-auto leading-relaxed">
-          Location-aware visibility for sky events and mission context, presented
-          clearly without visual noise.
+          {t(
+            "Location-aware visibility for sky events and mission context, presented clearly without visual noise."
+          )}
         </p>
       </div>
 
@@ -72,7 +74,7 @@ function GlobalCoverage() {
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black">
           <img
             src="/textures/earth_night.png"
-            alt="Global coverage map"
+            alt={t("Global coverage map")}
             className="w-full h-auto opacity-90"
             loading="lazy"
           />
@@ -89,39 +91,25 @@ function GlobalCoverage() {
 }
 
 export default function About() {
+  const { t } = useUi();
+
   return (
     <main className="relative z-10 px-6 md:px-12 pt-28 pb-16">
       <div className="mx-auto max-w-6xl space-y-10">
-        <section className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] items-start">
-          <GlassCard title="About SpaceScope 360">
-            <div className="space-y-5">
-              <img
-                src={aboutImage}
-                alt="About SpaceScope 360"
-                className="w-full h-auto rounded-2xl border border-white/10"
-                loading="lazy"
-              />
-
-              <div>
-                <h1 className="mt-3 text-lg md:text-xl font-medium text-white leading-tight">
-                  From space data to real insight.
-                </h1>
-
-
-
-                <p className="mt-3 text-white/70 text-sm leading-relaxed">
-                  SpaceScope 360 brings space events, missions, and Earth-focused satellite insights 
-                  into one platform -
-                  making complex information easy to understand and act on.
-                </p>
-              </div>
-
-              <div className="text-xs text-white/50">
-                Explore • Learn • Stay Connected
-              </div>
-            </div>
-          </GlassCard>
-
+        <section className="text-center max-w-3xl mx-auto space-y-3">
+          <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+            {t("About Us")}
+          </p>
+          <h1 className="text-3xl md:text-4xl font-semibold text-white">
+            {t("Building SpaceScope 360")}
+          </h1>
+          <p className="text-sm md:text-base text-white/70">
+            {t(
+              "SpaceScope 360 unifies scattered space data into a single, interactive ecosystem. We bridge the gap between scientific complexity and public utility by transforming raw satellite telemetry into actionable insights, delivered through three integrated modules."
+            )}
+          </p>
+        </section>
+        <section className="grid gap-8 lg:grid-cols-1 items-start">
           <GlobalCoverage />
         </section>
 
