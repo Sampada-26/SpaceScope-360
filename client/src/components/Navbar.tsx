@@ -30,7 +30,7 @@ export default function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">
       <div className="glass mx-auto max-w-6xl rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between relative">
-        
+
         {/* Logo - Scrolls to Top */}
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-white/10 border border-white/10 shadow-glow" />
@@ -42,16 +42,15 @@ export default function Navbar() {
         {/* Navigation - Converted to Scroll Triggers */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-white/80">
           <button onClick={() => scrollToSection('about', 1.0)} className="hover:text-white transition">About</button>
-          
+
           {/* Matches showSky (0.28 - 0.60) */}
           <button onClick={() => scrollToSection('sky-watcher', 0.45)} className="hover:text-white transition">Sky Watcher</button>
-          
+
           {/* Matches showGuardian (0.60 - 0.84) */}
           <button onClick={() => scrollToSection('earth-guardian', 0.72)} className="hover:text-white transition">Earth Guardian</button>
-          
-          {/* Matches showClassroom (progress > 0.84) */}
-          <button onClick={() => scrollToSection('cosmic-classroom', 0.92)} className="hover:text-emerald-400 transition font-medium">Cosmic Classroom</button>
-          
+
+          <Link to="/cosmic-classroom"> Cosmic Classroom </Link>
+
           <button onClick={() => scrollToSection('missions', 0.85)} className="hover:text-white transition">Missions</button>
         </nav>
 
