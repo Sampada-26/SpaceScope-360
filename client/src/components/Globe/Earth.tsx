@@ -27,7 +27,7 @@ export default function Earth({
     clouds.anisotropy = 8;
   }, [clouds]);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (!group.current) return;
     group.current.rotation.y += delta * rotationSpeed;
 

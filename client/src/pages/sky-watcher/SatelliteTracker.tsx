@@ -174,7 +174,8 @@ export default function SatelliteTracker() {
                     <span>{activeSatellite.speed}</span>
                   </div>
                 </div>
-                <p className="text-sm text-white/70 mt-4">{activeSatellite.shortDescription}</p>
+                <p className="text-sm text-white/70 mt-4">{activeSatellite.description}</p>
+                <p className="text-sm text-white/70 mt-3">{activeSatellite.details}</p>
               </>
             ) : (
               <>
