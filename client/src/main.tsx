@@ -16,6 +16,7 @@ import StargazingSpots from "./pages/sky-watcher/StargazingSpots";
 import SatelliteTracker from "./pages/sky-watcher/SatelliteTracker";
 import SkyWatcherLanding from "./pages/sky-watcher/SkyWatcherLanding";
 import About from "./pages/about";
+import Missions from "./pages/Missions";
 
 import "./styles.css";
 
@@ -32,7 +33,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
             <Route path="/about" element={<About />} />
-            <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
+            <Route path="/missions" element={<Missions />} />
 
             <Route path="/sky-watcher" element={<SkyWatcherLanding />} />
             <Route path="/sky-watcher/constellations" element={<Constellations />} />
