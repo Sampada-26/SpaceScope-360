@@ -18,6 +18,12 @@ export default defineConfig({
         target: "http://localhost:5001",
         changeOrigin: true,
         secure: false,
+      },
+      "/translate": {
+        target: "https://api.mymemory.translated.net",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/translate/, "/get"),
       }
     }
   }
