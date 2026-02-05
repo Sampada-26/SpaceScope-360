@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import { Search } from "lucide-react";
 import Footer from "../../components/Footer";
+import { useUi } from "../../context/UiContext";
 
 const constellations = [
   {
@@ -153,6 +154,8 @@ function ConstellationModel({
 }
 
 export default function Constellations() {
+  const { t } = useUi();
+
   const [query, setQuery] = useState("");
   const [selectedStarId, setSelectedStarId] = useState<string | null>(null);
   const [selectedConstellation, setSelectedConstellation] = useState<string | null>(null);
@@ -193,12 +196,16 @@ export default function Constellations() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
+              {t("Sky Watcher")}
+            </p>
             <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
-              3D Constellations
+              {t("3D Constellations")}
             </h1>
             <p className="text-white/70 mt-2 max-w-xl">
-              Browse luminous constellations in an immersive 3D viewer. Tap any star to reveal its story.
+              {t(
+                "Browse luminous constellations in an immersive 3D viewer. Tap any star to reveal its story."
+              )}
             </p>
           </div>
 
@@ -213,7 +220,7 @@ export default function Constellations() {
                   setSelectedStarId(null);
                 }
               }}
-              placeholder="Search constellation…"
+              placeholder={t("Search constellation…")}
               className="bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none w-full"
             />
           </div>
@@ -242,41 +249,48 @@ export default function Constellations() {
 
             {!activeConstellation && (
               <div className="absolute inset-0 flex items-center justify-center text-sm text-white/60">
-                Search a constellation to load the structure
+                {t("Search a constellation to load the structure")}
               </div>
             )}
 
             {activeStar && (
               <div className="absolute right-6 bottom-6 glass rounded-2xl p-4 w-[220px] border border-white/10">
                 <div className="text-sm font-semibold">{activeStar.name}</div>
-                <div className="text-xs text-white/70 mt-2">Brightness: {activeStar.brightness}</div>
-                <div className="text-xs text-white/70">Distance: {activeStar.distance}</div>
+                <div className="text-xs text-white/70 mt-2">
+                  {t("Brightness")}: {activeStar.brightness}
+                </div>
+                <div className="text-xs text-white/70">
+                  {t("Distance")}: {activeStar.distance}
+                </div>
                 <p className="text-xs text-white/60 mt-2">{activeStar.description}</p>
               </div>
             )}
           </div>
 
           <div className="glass rounded-3xl p-6 border border-white/10">
-            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Constellation Intel</div>
+            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
+              {t("Constellation Intel")}
+            </div>
             {detail ? (
               <>
                 <div className="text-xl font-semibold mt-4">{detail.name}</div>
                 <p className="text-sm text-white/70 mt-3">{detail.story}</p>
                 <div className="mt-4 text-sm">
-                  <div className="text-white/60">Best time to view</div>
+                  <div className="text-white/60">{t("Best time to view")}</div>
                   <div className="text-white/90">{detail.best}</div>
                 </div>
                 <div className="mt-3 text-sm">
-                  <div className="text-white/60">Hemisphere</div>
+                  <div className="text-white/60">{t("Hemisphere")}</div>
                   <div className="text-white/90">{detail.hemisphere}</div>
                 </div>
               </>
             ) : (
               <>
-                <div className="text-xl font-semibold mt-3">Search a Constellation</div>
+                <div className="text-xl font-semibold mt-3">{t("Search a Constellation")}</div>
                 <p className="text-sm text-white/60 mt-3">
-                  Type Orion, Ursa Major, Scorpius, Cassiopeia, or Leo to reveal the constellation structure
-                  and detailed info.
+                  {t(
+                    "Type Orion, Ursa Major, Scorpius, Cassiopeia, or Leo to reveal the constellation structure and detailed info."
+                  )}
                 </p>
               </>
             )}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { MapPin, Satellite, Sparkles } from "lucide-react";
 import Footer from "../../components/Footer";
+import { useUi } from "../../context/UiContext";
 
 const cards = [
   {
@@ -24,6 +25,8 @@ const cards = [
 ];
 
 export default function SkyWatcherLanding() {
+  const { t } = useUi();
+
   return (
     <div className="min-h-screen pt-28 pb-16 px-4 md:px-8">
       <div className="nebula" />
@@ -39,13 +42,16 @@ export default function SkyWatcherLanding() {
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="text-center max-w-3xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
+            {t("Sky Watcher")}
+          </p>
           <h1 className="text-4xl md:text-5xl font-semibold mt-4 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_22px_rgba(120,190,255,0.35)]">
-            Explore the Night Sky in 3D
+            {t("Explore the Night Sky in 3D")}
           </h1>
           <p className="text-white/70 mt-4">
-            Navigate constellations, discover pristine stargazing locations, and monitor satellites in a
-            futuristic command center.
+            {t(
+              "Navigate constellations, discover pristine stargazing locations, and monitor satellites in a futuristic command center."
+            )}
           </p>
         </div>
 
@@ -64,9 +70,15 @@ export default function SkyWatcherLanding() {
                 <div className="relative z-10 h-14 w-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-white/80 group-hover:text-white shadow-glow glow-ring">
                   <Icon className="h-5 w-5" />
                 </div>
-                <div className="relative z-10 mt-5 text-xl font-semibold text-white">{title}</div>
-                <p className="relative z-10 text-sm text-white/70 mt-3">{description}</p>
-                <div className="relative z-10 mt-6 text-xs text-cyan-200/80">Open module →</div>
+                <div className="relative z-10 mt-5 text-xl font-semibold text-white">
+                  {t(title)}
+                </div>
+                <p className="relative z-10 text-sm text-white/70 mt-3">
+                  {t(description)}
+                </p>
+                <div className="relative z-10 mt-6 text-xs text-cyan-200/80">
+                  {t("Open module →")}
+                </div>
                 <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-blue-400/20 blur-2xl" />
               </Link>
             ))}
