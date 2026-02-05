@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import GetStarted from "./pages/GetStarted";
 import Contact from "./pages/Contact";
 import Community from "./pages/Community";
+import CosmicClassroom from "./pages/CosmicClassroom";
 import Constellations from "./pages/sky-watcher/Constellations";
 import StargazingSpots from "./pages/sky-watcher/StargazingSpots";
 import SatelliteTracker from "./pages/sky-watcher/SatelliteTracker";
@@ -31,6 +32,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
             <Route path="/about" element={<About />} />
+            <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
 
             <Route path="/sky-watcher" element={<SkyWatcherLanding />} />
             <Route path="/sky-watcher/constellations" element={<Constellations />} />
