@@ -4,7 +4,6 @@ import { Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import type { Mesh } from "three";
 import Footer from "../../components/Footer";
-import { useUi } from "../../context/UiContext";
 
 const satellites = [
   {
@@ -91,8 +90,6 @@ function EarthSphere() {
 }
 
 export default function SatelliteTracker() {
-  const { t } = useUi();
-
   const [query, setQuery] = useState("");
 
   const activeSatellite = useMemo(() => {
@@ -109,16 +106,12 @@ export default function SatelliteTracker() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
-              {t("Sky Watcher")}
-            </p>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
             <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
-              {t("Live Satellite Tracker")}
+              Live Satellite Tracker
             </h1>
             <p className="text-white/70 mt-2 max-w-xl">
-              {t(
-                "Monitor satellites orbiting Earth with a sleek, real-time styled tracking interface."
-              )}
+              Monitor satellites orbiting Earth with a sleek, real-time styled tracking interface.
             </p>
           </div>
 
@@ -127,7 +120,7 @@ export default function SatelliteTracker() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder={t("Search satellite (e.g., ISS, Hubble)")}
+              placeholder="Search satellite (e.g., ISS, Hubble)"
               className="bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none w-full"
             />
           </div>
@@ -159,37 +152,36 @@ export default function SatelliteTracker() {
           </div>
 
           <div className="glass rounded-3xl p-6 border border-white/10">
-            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
-              {t("Telemetry")}
-            </div>
+            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Telemetry</div>
             {activeSatellite ? (
               <>
                 <div className="text-xl font-semibold mt-3">{activeSatellite.name}</div>
                 <div className="mt-4 text-sm text-white/80">
                   <div className="flex justify-between">
-                    <span className="text-white/60">{t("Type")}</span>
+                    <span className="text-white/60">Type</span>
                     <span>{activeSatellite.type}</span>
                   </div>
                   <div className="flex justify-between mt-2">
-                    <span className="text-white/60">{t("Launch Year")}</span>
+                    <span className="text-white/60">Launch Year</span>
                     <span>{activeSatellite.launchYear}</span>
                   </div>
                   <div className="flex justify-between mt-2">
-                    <span className="text-white/60">{t("Orbit")}</span>
+                    <span className="text-white/60">Orbit</span>
                     <span>{activeSatellite.orbit}</span>
                   </div>
                   <div className="flex justify-between mt-2">
-                    <span className="text-white/60">{t("Speed")}</span>
+                    <span className="text-white/60">Speed</span>
                     <span>{activeSatellite.speed}</span>
                   </div>
                 </div>
-                <p className="text-sm text-white/70 mt-4">{activeSatellite.shortDescription}</p>
+                <p className="text-sm text-white/70 mt-4">{activeSatellite.description}</p>
+                <p className="text-sm text-white/70 mt-3">{activeSatellite.details}</p>
               </>
             ) : (
               <>
-                <div className="text-xl font-semibold mt-3">{t("Awaiting Signal")}</div>
+                <div className="text-xl font-semibold mt-3">Awaiting Signal</div>
                 <p className="text-sm text-white/60 mt-3">
-                  {t("Search for a satellite to reveal its mission type, orbit, and velocity.")}
+                  Search for a satellite to reveal its mission type, orbit, and velocity.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {satellites.map((sat) => (
