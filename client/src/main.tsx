@@ -39,6 +39,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/sky-watcher/constellations" element={<Constellations />} />
             <Route path="/sky-watcher/stargazing-spots" element={<StargazingSpots />} />
             <Route path="/sky-watcher/satellite-tracker" element={<SatelliteTracker />} />
+            <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
           </Route>
         </Routes>
       </AuthProvider>
