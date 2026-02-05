@@ -18,13 +18,10 @@ export default function Navbar() {
             alt="SpaceScope 360 logo"
             className="h-9 w-9 object-contain"
           />
-
           <div className="font-semibold tracking-wide">
             SpaceScope <span className="text-white/70">360</span>
           </div>
         </Link>
-
-
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-white/80">
@@ -75,7 +72,7 @@ export default function Navbar() {
 
               <button
                 onClick={logout}
-                className="text-xs text-white/50 hover:text-white ml-2 transition"
+                className="text-xs text-white/50 hover:text-white ml-2 transition uppercase tracking-tighter"
               >
                 {t("Logout")}
               </button>

@@ -11,11 +11,13 @@ import Login from "./pages/Login";
 import GetStarted from "./pages/GetStarted";
 import Contact from "./pages/Contact";
 import Community from "./pages/Community";
+import CosmicClassroom from "./pages/CosmicClassroom";
 import Constellations from "./pages/sky-watcher/Constellations";
 import StargazingSpots from "./pages/sky-watcher/StargazingSpots";
 import SatelliteTracker from "./pages/sky-watcher/SatelliteTracker";
 import SkyWatcherLanding from "./pages/sky-watcher/SkyWatcherLanding";
 import About from "./pages/about";
+import Missions from "./pages/Missions";
 
 import "./styles.css";
 
@@ -28,16 +30,17 @@ createRoot(document.getElementById("root")!).render(
             <Route element={<SiteLayout />}>
               <Route path="/" element={<App />} />
               <Route path="/login" element={<Login />} />
-
               <Route path="/get-started" element={<GetStarted />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/community" element={<Community />} />
               <Route path="/about" element={<About />} />
+              <Route path="/missions" element={<Missions />} />
 
               <Route path="/sky-watcher" element={<SkyWatcherLanding />} />
               <Route path="/sky-watcher/constellations" element={<Constellations />} />
               <Route path="/sky-watcher/stargazing-spots" element={<StargazingSpots />} />
               <Route path="/sky-watcher/satellite-tracker" element={<SatelliteTracker />} />
+              <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
             </Route>
           </Routes>
         </AuthProvider>
