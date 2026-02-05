@@ -54,3 +54,24 @@ body {
   filter: blur(0px);
   opacity: 1;
 }
+
+.starfield {
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.7), transparent 40%),
+    radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.6), transparent 40%),
+    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,0.5), transparent 40%),
+    radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4), transparent 40%),
+    radial-gradient(1.5px 1.5px at 10% 70%, rgba(255,255,255,0.5), transparent 40%);
+  background-size: cover;
+  animation: star-drift 18s linear infinite;
+}
+
+@keyframes star-drift {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.glow-ring {
+  box-shadow: 0 0 24px rgba(120,180,255,0.35), 0 0 60px rgba(90,120,255,0.25);
+}

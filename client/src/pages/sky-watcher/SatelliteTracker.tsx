@@ -1,0 +1,163 @@
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Stars } from "@react-three/drei";
+import { Search } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import type { Mesh } from "three";
+
+const satellites = [
+  {
+    name: "ISS",
+    type: "Research",
+    launchYear: "1998",
+    orbit: "Low Earth Orbit",
+    speed: "7.66 km/s",
+  },
+  {
+    name: "Hubble",
+    type: "Research",
+    launchYear: "1990",
+    orbit: "Low Earth Orbit",
+    speed: "7.5 km/s",
+  },
+  {
+    name: "Starlink-4021",
+    type: "Communication",
+    launchYear: "2023",
+    orbit: "Low Earth Orbit",
+    speed: "7.8 km/s",
+  },
+];
+
+function OrbitingSatellite() {
+  const satellite = useRef<Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (satellite.current) {
+      satellite.current.position.x = Math.cos(t * 0.6) * 1.8;
+      satellite.current.position.z = Math.sin(t * 0.6) * 1.8;
+      satellite.current.position.y = Math.sin(t * 0.4) * 0.4;
+      satellite.current.rotation.y = t * 1.2;
+    }
+  });
+
+  return (
+    <mesh ref={satellite}>
+      <boxGeometry args={[0.16, 0.1, 0.24]} />
+      <meshStandardMaterial color="#b7d7ff" emissive="#7fb3ff" emissiveIntensity={1.1} />
+    </mesh>
+  );
+}
+
+export default function SatelliteTracker() {
+  const [query, setQuery] = useState("");
+
+  const activeSatellite = useMemo(() => {
+    const cleaned = query.trim().toLowerCase();
+    if (!cleaned) return null;
+    return satellites.find((sat) => sat.name.toLowerCase().includes(cleaned)) || null;
+  }, [query]);
+
+  return (
+    <div className="min-h-screen pt-28 pb-16 px-4 md:px-8">
+      <div className="nebula" />
+      <div className="grain" />
+
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Sky Watcher</p>
+            <h1 className="text-3xl md:text-4xl font-semibold mt-2">Live Satellite Tracker</h1>
+            <p className="text-white/70 mt-2 max-w-xl">
+              Monitor satellites orbiting Earth with a sleek, real-time styled tracking interface.
+            </p>
+          </div>
+
+          <div className="glass rounded-full px-4 py-2 flex items-center gap-2 w-full md:w-[320px]">
+            <Search className="h-4 w-4 text-cyan-200/80" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search satellite (e.g., ISS, Hubble)"
+              className="bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none w-full"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <div className="glass rounded-3xl p-4 md:p-6 relative overflow-hidden min-h-[420px]">
+            <div className="absolute inset-0 starfield opacity-60" />
+            <div className="absolute -top-20 -left-10 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
+
+            <div className="relative z-10 h-[360px] md:h-[460px] rounded-2xl overflow-hidden border border-white/10">
+              <Canvas camera={{ position: [0, 1.1, 3], fov: 50 }}>
+                <ambientLight intensity={0.6} />
+                <pointLight position={[2, 2, 2]} intensity={1.2} />
+                <Stars radius={60} depth={30} count={1400} factor={2.5} fade />
+
+                <mesh>
+                  <sphereGeometry args={[1, 48, 48]} />
+                  <meshStandardMaterial color="#0a1c3b" emissive="#1b3d8f" emissiveIntensity={0.9} />
+                </mesh>
+
+                <mesh rotation={[Math.PI / 2, 0, 0]}>
+                  <torusGeometry args={[1.6, 0.02, 16, 120]} />
+                  <meshStandardMaterial color="#4cc9ff" emissive="#4cc9ff" emissiveIntensity={0.8} />
+                </mesh>
+
+                <OrbitingSatellite />
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Canvas>
+            </div>
+          </div>
+
+          <div className="glass rounded-3xl p-6 border border-white/10">
+            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Telemetry</div>
+            {activeSatellite ? (
+              <>
+                <div className="text-xl font-semibold mt-3">{activeSatellite.name}</div>
+                <div className="mt-4 text-sm text-white/80">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Type</span>
+                    <span>{activeSatellite.type}</span>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-white/60">Launch Year</span>
+                    <span>{activeSatellite.launchYear}</span>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-white/60">Orbit</span>
+                    <span>{activeSatellite.orbit}</span>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-white/60">Speed</span>
+                    <span>{activeSatellite.speed}</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-xl font-semibold mt-3">Awaiting Signal</div>
+                <p className="text-sm text-white/60 mt-3">
+                  Search for a satellite to reveal its mission type, orbit, and velocity.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {satellites.map((sat) => (
+                    <button
+                      key={sat.name}
+                      type="button"
+                      className="text-xs px-3 py-1 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition"
+                      onClick={() => setQuery(sat.name)}
+                    >
+                      {sat.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
