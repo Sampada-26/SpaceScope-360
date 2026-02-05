@@ -2,6 +2,7 @@ import GlassCard from "../components/GlassCard";
 import GlassButton from "../components/GlassButton";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { useUi } from "../context/UiContext";
 
 import satelliteImg from "../assets/satellite.jpg";
 import spaceImg from "../assets/space.jpg";
@@ -35,49 +36,52 @@ function ImagePanel({
 }
 
 export default function GetStarted() {
+  const { t } = useUi();
+
   return (
     <div className="relative z-10 px-6 md:px-12 pt-28 pb-16">
       <div className="mx-auto max-w-6xl space-y-10">
-        <GlassCard title="Get Started">
+        <GlassCard title={t("Get Started")}>
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <div className="text-2xl font-semibold text-white">
-                Launch SpaceScope 360
+                {t("Launch SpaceScope 360")}
               </div>
 
               <p className="mt-3 text-white/70 text-sm leading-relaxed">
-                Choose a module to begin exploring real-time sky events, Earth
-                intelligence, and mission learning.
+                {t(
+                  "Choose a module to begin exploring real-time sky events, Earth intelligence, and mission learning."
+                )}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3 pointer-events-auto">
                 <Link to="/sky-watcher">
-                  <GlassButton variant="glow">Open Sky Watcher</GlassButton>
+                  <GlassButton variant="glow">{t("Open Sky Watcher")}</GlassButton>
                 </Link>
 
                 <Link to="/earth-guardian">
-                  <GlassButton variant="outline">Open Earth Guardian</GlassButton>
+                  <GlassButton variant="outline">{t("Open Earth Guardian")}</GlassButton>
                 </Link>
 
                 <Link to="/cosmic-classroom">
                   <GlassButton variant="outline">
-                    Open Cosmic Classroom
+                    {t("Open Cosmic Classroom")}
                   </GlassButton>
                 </Link>
               </div>
 
               <div className="mt-6 text-xs text-white/50">
-                Tip: Use the navbar to jump between modules anytime.
+                {t("Tip: Use the navbar to jump between modules anytime.")}
               </div>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-              <div className="text-white/80 font-medium">Quick Setup</div>
+              <div className="text-white/80 font-medium">{t("Quick Setup")}</div>
 
               <ul className="mt-3 space-y-2 text-sm text-white/70">
-                <li>Enable notifications for event alerts</li>
-                <li>Set your location for visibility windows</li>
-                <li>Explore missions and save timelines</li>
+                <li>{t("Enable notifications for event alerts")}</li>
+                <li>{t("Set your location for visibility windows")}</li>
+                <li>{t("Explore missions and save timelines")}</li>
               </ul>
             </div>
           </div>
@@ -85,77 +89,80 @@ export default function GetStarted() {
 
         <section className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
-            <GlassCard title="Our Mission">
+            <GlassCard title={t("Our Mission")}>
               <div className="text-2xl font-semibold text-white leading-tight">
-                Explore space as a guided experience
+                {t("Explore space as a guided experience")}
               </div>
               <p className="mt-3 text-white/70 text-sm leading-relaxed">
-                We transform scattered space information into a single,
-                interactive ecosystem—built for students, enthusiasts, and
-                real-world relevance.
+                {t(
+                  "We transform scattered space information into a single, interactive ecosystem—built for students, enthusiasts, and real-world relevance."
+                )}
               </p>
 
               <div className="mt-6 flex gap-3 pointer-events-auto">
-                <GlassButton variant="glow">Explore Modules</GlassButton>
-                <GlassButton variant="outline">Read More</GlassButton>
+                <GlassButton variant="glow">{t("Explore Modules")}</GlassButton>
+                <GlassButton variant="outline">{t("Read More")}</GlassButton>
               </div>
             </GlassCard>
 
             <ImagePanel
-              label="Mission Visual"
+              label={t("Mission Visual")}
               src={spaceImg}
-              alt="Mission visual"
+              alt={t("Mission visual")}
             />
           </div>
 
           <div className="space-y-6">
             <ImagePanel
-              label="Innovation Visual"
+              label={t("Innovation Visual")}
               src={satelliteImg}
-              alt="Innovation visual"
+              alt={t("Innovation visual")}
             />
 
-            <GlassCard title="Our Capabilities">
+            <GlassCard title={t("Our Capabilities")}>
               <div className="text-2xl font-semibold text-white leading-tight">
-                Innovation that feels usable
+                {t("Innovation that feels usable")}
               </div>
               <p className="mt-3 text-white/70 text-sm leading-relaxed">
-                Alerts, visibility windows, mission timelines, and learning
-                tools—wrapped in a premium UI that makes complex data easy to act
-                on.
+                {t(
+                  "Alerts, visibility windows, mission timelines, and learning tools—wrapped in a premium UI that makes complex data easy to act on."
+                )}
               </p>
 
               <div className="mt-6 flex gap-3 pointer-events-auto">
-                <GlassButton variant="glow">Learn More</GlassButton>
-                <GlassButton variant="outline">See Features</GlassButton>
+                <GlassButton variant="glow">{t("Learn More")}</GlassButton>
+                <GlassButton variant="outline">{t("See Features")}</GlassButton>
               </div>
             </GlassCard>
           </div>
         </section>
 
-        <GlassCard title="What makes it different">
+        <GlassCard title={t("What makes it different")}>
           <div className="grid gap-4 md:grid-cols-3 text-sm">
             <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <div className="text-white/80 font-medium">Clear visibility</div>
+              <div className="text-white/80 font-medium">{t("Clear visibility")}</div>
               <p className="mt-2 text-white/65 leading-relaxed">
-                Location-aware sky events and clean timelines that reduce
-                scattered browsing.
+                {t(
+                  "Location-aware sky events and clean timelines that reduce scattered browsing."
+                )}
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <div className="text-white/80 font-medium">Actionable insights</div>
+              <div className="text-white/80 font-medium">{t("Actionable insights")}</div>
               <p className="mt-2 text-white/65 leading-relaxed">
-                Convert raw updates into alerts and summaries that are fast to
-                understand.
+                {t(
+                  "Convert raw updates into alerts and summaries that are fast to understand."
+                )}
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <div className="text-white/80 font-medium">Learning-first</div>
+              <div className="text-white/80 font-medium">{t("Learning-first")}</div>
               <p className="mt-2 text-white/65 leading-relaxed">
-                Built-in learning layers, quizzes, and mission context so users
-                learn while exploring.
+                {t(
+                  "Built-in learning layers, quizzes, and mission context so users learn while exploring."
+                )}
               </p>
             </div>
           </div>
