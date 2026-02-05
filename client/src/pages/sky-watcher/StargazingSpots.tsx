@@ -1,5 +1,6 @@
 import { MapPin, Search } from "lucide-react";
 import worldMap from "../../assets/world-map.svg";
+import Footer from "../../components/Footer";
 
 const spots = [
   {
@@ -37,8 +38,10 @@ export default function StargazingSpots() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Sky Watcher</p>
-            <h1 className="text-3xl md:text-4xl font-semibold mt-2">Stargazing Spots</h1>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+            <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
+              Stargazing Spots
+            </h1>
             <p className="text-white/70 mt-2 max-w-xl">
               Filter by region, season, and light pollution to discover pristine observation zones.
             </p>
@@ -54,7 +57,7 @@ export default function StargazingSpots() {
           <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
             <div>
               <label className="text-xs text-white/60">Country</label>
-              <select className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm">
+              <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Chile</option>
                 <option>India</option>
                 <option>USA</option>
@@ -63,7 +66,7 @@ export default function StargazingSpots() {
             </div>
             <div>
               <label className="text-xs text-white/60">State</label>
-              <select className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm">
+              <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Antofagasta</option>
                 <option>Ladakh</option>
                 <option>Texas</option>
@@ -72,7 +75,7 @@ export default function StargazingSpots() {
             </div>
             <div>
               <label className="text-xs text-white/60">Taluka</label>
-              <select className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm">
+              <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Calama</option>
                 <option>Leh</option>
                 <option>Presidio</option>
@@ -81,7 +84,7 @@ export default function StargazingSpots() {
             </div>
             <div>
               <label className="text-xs text-white/60">Light Pollution Level</label>
-              <select className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm">
+              <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Low</option>
                 <option>Medium</option>
                 <option>High</option>
@@ -89,7 +92,7 @@ export default function StargazingSpots() {
             </div>
             <div>
               <label className="text-xs text-white/60">Best Season</label>
-              <select className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm">
+              <select className="mt-2 w-full rounded-xl bg-slate-900/80 border border-white/20 px-3 py-2 text-sm text-white">
                 <option>Winter</option>
                 <option>Summer</option>
                 <option>Monsoon</option>
@@ -133,6 +136,7 @@ export default function StargazingSpots() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import type { Mesh } from "three";
+import Footer from "../../components/Footer";
+import satelliteImg from "../../assets/satellite.jpg";
 
 const satellites = [
   {
@@ -11,6 +13,9 @@ const satellites = [
     launchYear: "1998",
     orbit: "Low Earth Orbit",
     speed: "7.66 km/s",
+    image: satelliteImg,
+    description:
+      "A modular research outpost hosting long-duration missions and Earth observation experiments.",
   },
   {
     name: "Hubble",
@@ -18,6 +23,9 @@ const satellites = [
     launchYear: "1990",
     orbit: "Low Earth Orbit",
     speed: "7.5 km/s",
+    image: satelliteImg,
+    description:
+      "A legendary space telescope capturing deep-field images and distant galaxies.",
   },
   {
     name: "Starlink-4021",
@@ -25,6 +33,9 @@ const satellites = [
     launchYear: "2023",
     orbit: "Low Earth Orbit",
     speed: "7.8 km/s",
+    image: satelliteImg,
+    description:
+      "A broadband relay satellite supporting global connectivity and low-latency networks.",
   },
 ];
 
@@ -49,6 +60,20 @@ function OrbitingSatellite() {
   );
 }
 
+function EarthSphere() {
+  const [colorMap, nightMap] = useTexture([
+    "/textures/earth_day.jpg",
+    "/textures/earth_night.png",
+  ]);
+
+  return (
+    <mesh>
+      <sphereGeometry args={[1, 64, 64]} />
+      <meshStandardMaterial map={colorMap} emissiveMap={nightMap} emissive="#0b2b6b" emissiveIntensity={0.6} />
+    </mesh>
+  );
+}
+
 export default function SatelliteTracker() {
   const [query, setQuery] = useState("");
 
@@ -66,8 +91,10 @@ export default function SatelliteTracker() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Sky Watcher</p>
-            <h1 className="text-3xl md:text-4xl font-semibold mt-2">Live Satellite Tracker</h1>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+            <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
+              Live Satellite Tracker
+            </h1>
             <p className="text-white/70 mt-2 max-w-xl">
               Monitor satellites orbiting Earth with a sleek, real-time styled tracking interface.
             </p>
@@ -95,10 +122,7 @@ export default function SatelliteTracker() {
                 <pointLight position={[2, 2, 2]} intensity={1.2} />
                 <Stars radius={60} depth={30} count={1400} factor={2.5} fade />
 
-                <mesh>
-                  <sphereGeometry args={[1, 48, 48]} />
-                  <meshStandardMaterial color="#0a1c3b" emissive="#1b3d8f" emissiveIntensity={0.9} />
-                </mesh>
+                <EarthSphere />
 
                 <mesh rotation={[Math.PI / 2, 0, 0]}>
                   <torusGeometry args={[1.6, 0.02, 16, 120]} />
@@ -134,6 +158,7 @@ export default function SatelliteTracker() {
                     <span>{activeSatellite.speed}</span>
                   </div>
                 </div>
+                <p className="text-sm text-white/70 mt-4">{activeSatellite.description}</p>
               </>
             ) : (
               <>
@@ -157,7 +182,25 @@ export default function SatelliteTracker() {
             )}
           </div>
         </div>
+
+        <div className="mt-10 glass rounded-3xl p-6 border border-white/10">
+          <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Satellite Gallery</div>
+          <div className="mt-5 grid gap-5 md:grid-cols-3">
+            {satellites.map((sat) => (
+              <div key={sat.name} className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+                <img src={sat.image} alt={`${sat.name} satellite`} className="h-40 w-full object-cover" />
+                <div className="p-4">
+                  <div className="text-lg font-semibold text-white">{sat.name}</div>
+                  <div className="text-xs text-white/60 mt-1">{sat.type}</div>
+                  <p className="text-sm text-white/70 mt-3">{sat.description}</p>
+                  <div className="mt-4 text-xs text-cyan-200/80">Launch: {sat.launchYear}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

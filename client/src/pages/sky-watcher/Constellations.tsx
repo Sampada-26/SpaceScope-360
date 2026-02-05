@@ -1,8 +1,9 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Line, OrbitControls, Stars } from "@react-three/drei";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import { Search } from "lucide-react";
+import Footer from "../../components/Footer";
 
 const constellations = [
   {
@@ -154,10 +155,10 @@ function ConstellationModel({
 export default function Constellations() {
   const [query, setQuery] = useState("");
   const [selectedStarId, setSelectedStarId] = useState<string | null>(null);
-  const [selectedConstellation, setSelectedConstellation] = useState(constellations[0].name);
+  const [selectedConstellation, setSelectedConstellation] = useState<string | null>(null);
 
   const activeConstellation = useMemo(
-    () => constellations.find((item) => item.name === selectedConstellation) || constellations[0],
+    () => constellations.find((item) => item.name === selectedConstellation) || null,
     [selectedConstellation]
   );
 
@@ -167,10 +168,20 @@ export default function Constellations() {
     return constellations.find((item) => item.name.toLowerCase().includes(cleaned)) || null;
   }, [query]);
 
-  const detail = matchedConstellation || activeConstellation;
+  const detail = matchedConstellation || null;
+
+  useEffect(() => {
+    if (matchedConstellation) {
+      setSelectedConstellation(matchedConstellation.name);
+      setSelectedStarId(null);
+    }
+  }, [matchedConstellation]);
 
   const activeStar = useMemo(
-    () => activeConstellation.stars.find((star) => star.id === selectedStarId) || null,
+    () =>
+      activeConstellation
+        ? activeConstellation.stars.find((star) => star.id === selectedStarId) || null
+        : null,
     [activeConstellation, selectedStarId]
   );
 
@@ -182,8 +193,10 @@ export default function Constellations() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Sky Watcher</p>
-            <h1 className="text-3xl md:text-4xl font-semibold mt-2">3D Constellations</h1>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
+            <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
+              3D Constellations
+            </h1>
             <p className="text-white/70 mt-2 max-w-xl">
               Browse luminous constellations in an immersive 3D viewer. Tap any star to reveal its story.
             </p>
@@ -216,14 +229,22 @@ export default function Constellations() {
                 <ambientLight intensity={0.6} />
                 <pointLight position={[2, 2, 2]} intensity={1.2} />
                 <Stars radius={50} depth={30} count={1200} factor={2.5} fade />
-                <ConstellationModel
-                  stars={activeConstellation.stars}
-                  links={activeConstellation.links}
-                  onSelect={setSelectedStarId}
-                />
+                {activeConstellation && (
+                  <ConstellationModel
+                    stars={activeConstellation.stars}
+                    links={activeConstellation.links}
+                    onSelect={setSelectedStarId}
+                  />
+                )}
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Canvas>
             </div>
+
+            {!activeConstellation && (
+              <div className="absolute inset-0 flex items-center justify-center text-sm text-white/60">
+                Search a constellation to load the structure
+              </div>
+            )}
 
             {activeStar && (
               <div className="absolute right-6 bottom-6 glass rounded-2xl p-4 w-[220px] border border-white/10">
@@ -239,29 +260,7 @@ export default function Constellations() {
             <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Constellation Intel</div>
             {detail ? (
               <>
-                <div className="mt-4 grid gap-2">
-                  {constellations.map((item) => (
-                    <button
-                      key={item.name}
-                      type="button"
-                      className={`text-left px-4 py-3 rounded-2xl border transition ${
-                        item.name === activeConstellation.name
-                          ? "border-cyan-300/60 bg-cyan-400/10 text-white"
-                          : "border-white/10 text-white/70 hover:text-white hover:border-white/30"
-                      }`}
-                      onClick={() => {
-                        setSelectedConstellation(item.name);
-                        setSelectedStarId(null);
-                        setQuery(item.name);
-                      }}
-                    >
-                      <div className="font-semibold">{item.name}</div>
-                      <div className="text-xs text-white/60 mt-1">Tap to view the structure</div>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="text-xl font-semibold mt-5">{detail.name}</div>
+                <div className="text-xl font-semibold mt-4">{detail.name}</div>
                 <p className="text-sm text-white/70 mt-3">{detail.story}</p>
                 <div className="mt-4 text-sm">
                   <div className="text-white/60">Best time to view</div>
@@ -274,27 +273,17 @@ export default function Constellations() {
               </>
             ) : (
               <>
-                <div className="text-xl font-semibold mt-3">Awaiting Search</div>
+                <div className="text-xl font-semibold mt-3">Search a Constellation</div>
                 <p className="text-sm text-white/60 mt-3">
-                  Type one of the example constellations to surface a mythology summary and viewing window.
+                  Type Orion, Ursa Major, Scorpius, Cassiopeia, or Leo to reveal the constellation structure
+                  and detailed info.
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {constellations.map((item) => (
-                    <button
-                      key={item.name}
-                      type="button"
-                      className="text-xs px-3 py-1 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition"
-                      onClick={() => setQuery(item.name)}
-                    >
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
               </>
             )}
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

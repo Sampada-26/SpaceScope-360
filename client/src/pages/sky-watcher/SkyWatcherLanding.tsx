@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MapPin, Satellite, Sparkles } from "lucide-react";
+import Footer from "../../components/Footer";
 
 const cards = [
   {
@@ -27,11 +28,21 @@ export default function SkyWatcherLanding() {
     <div className="min-h-screen pt-28 pb-16 px-4 md:px-8">
       <div className="nebula" />
       <div className="grain" />
+      <div
+        className="fixed inset-0 opacity-30"
+        style={{
+          backgroundImage: "url(/textures/earth_night.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="text-center max-w-3xl mx-auto">
           <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Sky Watcher</p>
-          <h1 className="text-4xl md:text-5xl font-semibold mt-4">Explore the Night Sky in 3D</h1>
+          <h1 className="text-4xl md:text-5xl font-semibold mt-4 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_22px_rgba(120,190,255,0.35)]">
+            Explore the Night Sky in 3D
+          </h1>
           <p className="text-white/70 mt-4">
             Navigate constellations, discover pristine stargazing locations, and monitor satellites in a
             futuristic command center.
@@ -62,6 +73,7 @@ export default function SkyWatcherLanding() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
