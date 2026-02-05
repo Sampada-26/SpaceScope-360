@@ -4,7 +4,7 @@ import GlassButton from "./GlassButton";
 export default function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">
-      <div className="glass mx-auto max-w-6xl rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between">
+      <div className="glass mx-auto max-w-6xl rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between relative">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-white/10 border border-white/10 shadow-glow" />
