@@ -4,7 +4,6 @@ import { Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import type { Mesh } from "three";
 import Footer from "../../components/Footer";
-import satelliteImg from "../../assets/satellite.jpg";
 
 const satellites = [
   {
@@ -13,9 +12,12 @@ const satellites = [
     launchYear: "1998",
     orbit: "Low Earth Orbit",
     speed: "7.66 km/s",
-    image: satelliteImg,
+    image: "/iss.jpg",
+    shortDescription: "Crewed orbital lab for microgravity science and Earth observation.",
     description:
       "A modular research outpost hosting long-duration missions and Earth observation experiments.",
+    details:
+      "Crewed continuously since 2000. Hosts international science labs, solar arrays, and docking ports for visiting spacecraft. Conducts microgravity research, Earth imaging, and technology demos.",
   },
   {
     name: "Hubble",
@@ -23,9 +25,12 @@ const satellites = [
     launchYear: "1990",
     orbit: "Low Earth Orbit",
     speed: "7.5 km/s",
-    image: satelliteImg,
+    image: "/hubble.webp",
+    shortDescription: "Iconic space telescope capturing deep-field imagery.",
     description:
       "A legendary space telescope capturing deep-field images and distant galaxies.",
+    details:
+      "Observes in ultraviolet, visible, and near-infrared. Delivered iconic deep-field imagery and refined the Hubble constant. Serviced multiple times by astronauts.",
   },
   {
     name: "Starlink-4021",
@@ -33,9 +38,12 @@ const satellites = [
     launchYear: "2023",
     orbit: "Low Earth Orbit",
     speed: "7.8 km/s",
-    image: satelliteImg,
+    image: "/Starlink.webp",
+    shortDescription: "Broadband relay node in a global internet constellation.",
     description:
       "A broadband relay satellite supporting global connectivity and low-latency networks.",
+    details:
+      "Part of a large constellation providing global internet coverage. Uses phased array antennas, ion thrusters for station keeping, and inter-satellite laser links.",
   },
 ];
 
@@ -69,7 +77,14 @@ function EarthSphere() {
   return (
     <mesh>
       <sphereGeometry args={[1, 64, 64]} />
-      <meshStandardMaterial map={colorMap} emissiveMap={nightMap} emissive="#0b2b6b" emissiveIntensity={0.6} />
+      <meshStandardMaterial
+        map={colorMap}
+        emissiveMap={nightMap}
+        emissive="#1e5cff"
+        emissiveIntensity={1.35}
+        roughness={0.35}
+        metalness={0.15}
+      />
     </mesh>
   );
 }
@@ -118,8 +133,9 @@ export default function SatelliteTracker() {
 
             <div className="relative z-10 h-[360px] md:h-[460px] rounded-2xl overflow-hidden border border-white/10">
               <Canvas camera={{ position: [0, 1.1, 3], fov: 50 }}>
-                <ambientLight intensity={0.6} />
-                <pointLight position={[2, 2, 2]} intensity={1.2} />
+                <ambientLight intensity={1.15} />
+                <pointLight position={[2, 2, 2]} intensity={2.3} />
+                <directionalLight position={[-3, 1.5, 2]} intensity={1.6} />
                 <Stars radius={60} depth={30} count={1400} factor={2.5} fade />
 
                 <EarthSphere />
@@ -158,7 +174,7 @@ export default function SatelliteTracker() {
                     <span>{activeSatellite.speed}</span>
                   </div>
                 </div>
-                <p className="text-sm text-white/70 mt-4">{activeSatellite.description}</p>
+                <p className="text-sm text-white/70 mt-4">{activeSatellite.shortDescription}</p>
               </>
             ) : (
               <>
@@ -183,22 +199,40 @@ export default function SatelliteTracker() {
           </div>
         </div>
 
-        <div className="mt-10 glass rounded-3xl p-6 border border-white/10">
-          <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Satellite Gallery</div>
-          <div className="mt-5 grid gap-5 md:grid-cols-3">
-            {satellites.map((sat) => (
-              <div key={sat.name} className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-                <img src={sat.image} alt={`${sat.name} satellite`} className="h-40 w-full object-cover" />
-                <div className="p-4">
-                  <div className="text-lg font-semibold text-white">{sat.name}</div>
-                  <div className="text-xs text-white/60 mt-1">{sat.type}</div>
-                  <p className="text-sm text-white/70 mt-3">{sat.description}</p>
-                  <div className="mt-4 text-xs text-cyan-200/80">Launch: {sat.launchYear}</div>
+        {activeSatellite && (
+          <div className="mt-10 glass rounded-3xl p-6 border border-white/10">
+            <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Satellite Profile</div>
+            <div className="mt-5 grid gap-6 md:grid-cols-[1.1fr_1.4fr]">
+              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+                <img
+                  src={activeSatellite.image}
+                  alt={`${activeSatellite.name} satellite`}
+                  className="w-full aspect-[16/9] object-cover"
+                />
+              </div>
+              <div>
+                <div className="text-2xl font-semibold text-white">{activeSatellite.name}</div>
+                <div className="text-sm text-white/60 mt-1">{activeSatellite.type}</div>
+                <p className="text-base md:text-lg text-white/80 mt-4">{activeSatellite.description}</p>
+                <p className="text-base md:text-lg text-white/80 mt-4">{activeSatellite.details}</p>
+                <div className="mt-4 grid gap-2 text-sm text-white/80">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Launch Year</span>
+                    <span>{activeSatellite.launchYear}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Orbit</span>
+                    <span>{activeSatellite.orbit}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Speed</span>
+                    <span>{activeSatellite.speed}</span>
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <Footer />
     </div>
