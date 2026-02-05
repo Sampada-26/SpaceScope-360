@@ -1,19 +1,16 @@
-import AppShell from "./layouts/AppShell";
-import GlobeScene from "./components/Globe/GlobeScene";
-import SceneOverlay from "./components/SceneOverlay";
-import useScrollProgress from "./hooks/useScrollProgress";
-import SkyWatcher from "./pages/SkyWatcher";
-import EarthGuardian from "./pages/EarthGuardian";
-import CosmicClassroom from "./pages/CosmicClassroom";
-import Footer from "./components/Footer";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import { useAuth } from "./context/AuthContext";
 
 export default function App() {
-  const progress = useScrollProgress();
+  const { user, loading } = useAuth();
 
   const showSky = progress >= 0.28 && progress <= 0.60;
   const showGuardian = progress > 0.60 && progress <= 0.84;
   const showClassroom = progress > 0.84 && progress < 0.90;
 
+  if (loading) return null; // Or a loading spinner
 
   return (
     <AppShell>
