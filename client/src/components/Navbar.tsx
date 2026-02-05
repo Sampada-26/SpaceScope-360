@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import GlassButton from "./GlassButton";
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">
       <div className="glass mx-auto max-w-6xl rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between relative">
@@ -15,35 +18,39 @@ export default function Navbar() {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-white/80">
-          <Link to="/about" className="hover:text-white transition">
-            About
-          </Link>
-          <Link to="/sky-watcher" className="hover:text-white transition">
-            Sky Watcher
-          </Link>
-
-          <Link to="/earth-guardian" className="hover:text-white transition">
-            Earth Guardian
-          </Link>
-
-          <Link to="/cosmic-classroom" className="hover:text-white transition">
-            Cosmic Classroom
-          </Link>
-
-          <Link to="/missions" className="hover:text-white transition">
-            Missions
-          </Link>
+          <Link to="/about" className="hover:text-white transition">About</Link>
+          <Link to="/sky-watcher" className="hover:text-white transition">Sky Watcher</Link>
+          <Link to="/earth-guardian" className="hover:text-white transition">Earth Guardian</Link>
+          <Link to="/cosmic-classroom" className="hover:text-white transition">Cosmic Classroom</Link>
+          <Link to="/missions" className="hover:text-white transition">Missions</Link>
         </nav>
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Link to="/login">
-            <GlassButton variant="outline">Login</GlassButton>
-          </Link>
-
-          <Link to="/sign-up">
-            <GlassButton variant="glow">Sign-up</GlassButton>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:block text-sm text-white/70">
+                {user.displayName}
+              </span>
+              <img
+                src={user.avatar}
+                alt="User"
+                className="h-8 w-8 rounded-full border border-neon-cyan/50 shadow-glow"
+              />
+              <button
+                onClick={logout}
+                className="text-xs text-white/50 hover:text-white ml-2 transition"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link to="/login">
+                <GlassButton variant="outline">Login</GlassButton>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>
