@@ -9,6 +9,11 @@ const constellations = [
   {
     name: "Orion",
     story: "A mighty hunter placed among the stars, guiding travelers across winter skies.",
+    mythology:
+      "Orion appears in many cultures as a great hunter or warrior. The three belt stars make it easy to identify, and the bright stars at his shoulders and feet anchor the shape.",
+    keyStars: "Betelgeuse (red supergiant), Rigel (blue supergiant), Alnitak–Alnilam–Mintaka (belt)",
+    highlights:
+      "Home to the Orion Nebula (M42), a nearby stellar nursery visible with binoculars. Look for the sword hanging below the belt.",
     best: "December to February",
     hemisphere: "Northern Hemisphere",
     stars: [
@@ -29,6 +34,11 @@ const constellations = [
   {
     name: "Ursa Major",
     story: "The great bear whose shape anchors the Big Dipper, a celestial compass.",
+    mythology:
+      "A legendary bear in Greek myth, often linked to Callisto. The Big Dipper asterism within Ursa Major is used worldwide for navigation.",
+    keyStars: "Dubhe and Merak (the 'pointers' to Polaris), Alioth, Mizar",
+    highlights:
+      "Follow the two pointer stars at the bowl’s edge to find Polaris in Ursa Minor. Mizar has a famous optical companion, Alcor.",
     best: "March to May",
     hemisphere: "Northern Hemisphere",
     stars: [
@@ -50,6 +60,11 @@ const constellations = [
   {
     name: "Scorpius",
     story: "A radiant scorpion glowing in the summer sky, rich with red supergiants.",
+    mythology:
+      "In Greek lore, Scorpius is the scorpion that brought down Orion. The constellation is prominent in southern skies and traces a hooked tail.",
+    keyStars: "Antares (red supergiant), Shaula, Sargas",
+    highlights:
+      "Antares shines with a deep red hue near the galactic center. The curved tail is a signature shape for summer stargazing.",
     best: "June to August",
     hemisphere: "Southern Hemisphere",
     stars: [
@@ -69,6 +84,11 @@ const constellations = [
   {
     name: "Cassiopeia",
     story: "A queen's throne of stars forming a shimmering W in autumn nights.",
+    mythology:
+      "Cassiopeia is the vain queen in Greek myth, placed in the sky near her daughter Andromeda. The W shape is easy to spot.",
+    keyStars: "Schedar, Caph, Gamma Cassiopeiae",
+    highlights:
+      "Opposite the Big Dipper across Polaris, it helps locate the Andromeda Galaxy region in autumn.",
     best: "September to November",
     hemisphere: "Northern Hemisphere",
     stars: [
@@ -88,6 +108,11 @@ const constellations = [
   {
     name: "Leo",
     story: "The lion of the zodiac, roaring across spring evenings.",
+    mythology:
+      "Leo represents the Nemean Lion from Greek myth. Its sickle-shaped head asterism resembles a backward question mark.",
+    keyStars: "Regulus (heart of the lion), Denebola",
+    highlights:
+      "Look for the Sickle asterism to outline the head and mane. Leo marks the transition into spring skies.",
     best: "March to April",
     hemisphere: "Northern Hemisphere",
     stars: [
@@ -213,9 +238,15 @@ export default function Constellations() {
                   setSelectedStarId(null);
                 }
               }}
+              list="constellation-list"
               placeholder="Search constellation…"
               className="bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none w-full"
             />
+            <datalist id="constellation-list">
+              {constellations.map((item) => (
+                <option key={item.name} value={item.name} />
+              ))}
+            </datalist>
           </div>
         </div>
 
@@ -240,12 +271,6 @@ export default function Constellations() {
               </Canvas>
             </div>
 
-            {!activeConstellation && (
-              <div className="absolute inset-0 flex items-center justify-center text-sm text-white/60">
-                Search a constellation to load the structure
-              </div>
-            )}
-
             {activeStar && (
               <div className="absolute right-6 bottom-6 glass rounded-2xl p-4 w-[220px] border border-white/10">
                 <div className="text-sm font-semibold">{activeStar.name}</div>
@@ -258,10 +283,22 @@ export default function Constellations() {
 
           <div className="glass rounded-3xl p-6 border border-white/10">
             <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Constellation Intel</div>
-            {detail ? (
+            {detail && (
               <>
                 <div className="text-xl font-semibold mt-4">{detail.name}</div>
                 <p className="text-sm text-white/70 mt-3">{detail.story}</p>
+                <div className="mt-4 text-sm">
+                  <div className="text-white/60">Mythology</div>
+                  <div className="text-white/90">{detail.mythology}</div>
+                </div>
+                <div className="mt-3 text-sm">
+                  <div className="text-white/60">Key Stars</div>
+                  <div className="text-white/90">{detail.keyStars}</div>
+                </div>
+                <div className="mt-3 text-sm">
+                  <div className="text-white/60">Highlights</div>
+                  <div className="text-white/90">{detail.highlights}</div>
+                </div>
                 <div className="mt-4 text-sm">
                   <div className="text-white/60">Best time to view</div>
                   <div className="text-white/90">{detail.best}</div>
@@ -270,14 +307,6 @@ export default function Constellations() {
                   <div className="text-white/60">Hemisphere</div>
                   <div className="text-white/90">{detail.hemisphere}</div>
                 </div>
-              </>
-            ) : (
-              <>
-                <div className="text-xl font-semibold mt-3">Search a Constellation</div>
-                <p className="text-sm text-white/60 mt-3">
-                  Type Orion, Ursa Major, Scorpius, Cassiopeia, or Leo to reveal the constellation structure
-                  and detailed info.
-                </p>
               </>
             )}
           </div>
