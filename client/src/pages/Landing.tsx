@@ -424,7 +424,7 @@ export default function Landing() {
               <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 md:px-10">
                 <div className="text-center space-y-4 md:space-y-5">
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.45em] text-white/60">
-                    {t("Unified space data • Actionable insights")}
+                    {t("Unified space data ")}
                   </p>
                   <h1 className="text-4xl md:text-6xl font-semibold tracking-wide text-white drop-shadow-[0_0_28px_rgba(34,211,238,0.35)]">
                     {t("SpaceScope 360")}
@@ -436,7 +436,9 @@ export default function Landing() {
                   </p>
                   <div className="flex items-center justify-center gap-3">
                     <PrimaryButton>{t("Get Started")}</PrimaryButton>
-                    <GhostButton>{t("Explore Modules")}</GhostButton>
+                    <a href="#modules">
+                      <GhostButton>{t("Explore Modules")}</GhostButton>
+                    </a>
                   </div>
                   <p className="text-[10px] md:text-xs text-white/45">
                     {t("Scroll to descend • Orbit → Earth → Learning layer")}
@@ -478,7 +480,7 @@ export default function Landing() {
         </div>
 
         {/* SECTION: Modules */}
-        <section id="solutions" className="relative">
+        <section id="modules" className="relative">
           <div className="relative mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             <Link to="/sky-watcher" className="group">
               <Card className="relative overflow-hidden p-8 md:p-10 flex flex-col justify-center transition hover:border-cyan-400/40 hover:bg-cyan-500/5">
