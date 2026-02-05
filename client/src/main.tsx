@@ -16,6 +16,7 @@ import StargazingSpots from "./pages/sky-watcher/StargazingSpots";
 import SatelliteTracker from "./pages/sky-watcher/SatelliteTracker";
 import SkyWatcherLanding from "./pages/sky-watcher/SkyWatcherLanding";
 import About from "./pages/about";
+import EarthGuardian from "./pages/EarthGuardian";
 import Missions from "./pages/Missions";
 
 import "./styles.css";
@@ -33,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
             <Route path="/about" element={<About />} />
+            <Route path="/earth-guardian" element={<EarthGuardian />} />
             <Route path="/missions" element={<Missions />} />
 
             <Route path="/sky-watcher" element={<SkyWatcherLanding />} />

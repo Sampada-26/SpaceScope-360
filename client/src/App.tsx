@@ -3,7 +3,7 @@ import GlobeScene from "./components/Globe/GlobeScene";
 import SceneOverlay from "./components/SceneOverlay";
 import useScrollProgress from "./hooks/useScrollProgress";
 import SkyWatcher from "./pages/SkyWatcher";
-import EarthGuardian from "./pages/EarthGuardian";
+import EarthGuardianOverlay from "./pages/EarthGuardianOverlay";
 import CosmicClassroomSection from "./pages/CosmicClassroomSection";
 import Footer from "./components/Footer";
 
@@ -35,7 +35,7 @@ export default function App() {
       {/* Fixed UI Layer - Pages sit inside here */}
       <div className="fixed inset-0 pointer-events-none z-20">
         <SkyWatcher visible={showSky} />
-        <EarthGuardian visible={showGuardian} />
+        <EarthGuardianOverlay visible={showGuardian} />
 
         {/* Pass visibility prop. SpaceAcademy has z-index 100 to stay on top */}
         <CosmicClassroomSection visible={showClassroom} />
@@ -58,5 +58,4 @@ export default function App() {
     </AppShell>
   );
 }
-
 

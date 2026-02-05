@@ -104,10 +104,10 @@ type MissionCardProps = {
 
 function MissionCard({ mission, index, total, scrollYProgress }: MissionCardProps) {
   const base = total > 1 ? index / (total - 1) : 0;
-  const revealStart = Math.max(0, base - 0.08);
-  const revealEnd = Math.min(1, base + 0.1);
-  const opacity = useTransform(scrollYProgress, [revealStart, base, revealEnd], [0, 0.2, 1]);
-  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [26, 0]);
+  const revealStart = base;
+  const revealEnd = Math.min(1, base + 0.08);
+  const opacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 1]);
+  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [28, 0]);
 
   return (
     <motion.div
@@ -133,16 +133,14 @@ export default function Missions() {
   useEffect(() => {
     if (!timelineRef.current) return;
     const element = timelineRef.current;
-    const update = () => {
-      setTimelineHeight(element.scrollHeight);
-    };
+    const update = () => setTimelineHeight(element.scrollHeight);
     update();
     const observer = new ResizeObserver(update);
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
 
-  const rocketTravel = Math.max(0, timelineHeight - 220);
+  const rocketTravel = Math.max(0, timelineHeight - 240);
   const rocketYRaw = useTransform(scrollYProgress, [0, 1], [0, rocketTravel]);
   const rocketY = useSpring(rocketYRaw, { stiffness: 120, damping: 30, mass: 0.2 });
   const lineProgressRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
