@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock, ChevronRight, Star } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock } from 'lucide-react';
 import { QUIZ_QUESTIONS, TRAINING_SECTORS } from '../data/cosmicClassroomData';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
@@ -12,6 +11,22 @@ interface ProgressItem {
   completed: boolean;
 }
 
+type ProgressData = {
+  userId: string;
+  name: string;
+  email: string;
+  currentLevel: number;
+  completedLevels: number[];
+  badge: string;
+  status: string;
+};
+
+type UserData = {
+  _id: string;
+  name: string;
+  email: string;
+};
+
 const CosmicClassroom: React.FC = () => {
   const { t } = useUi();
   const [showQuiz, setShowQuiz] = useState(false);
@@ -19,32 +34,83 @@ const CosmicClassroom: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
-  const [progress, setProgress] = useState<ProgressItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState<string | null>(null);
 
-  // Fetch Progress on Mount
-  useEffect(() => {
-    fetchProgress();
-  }, []);
+  const badgeStyles = useMemo(
+    () => ({
+      None: "from-slate-700/60 to-slate-500/60 text-slate-200",
+      Bronze: "from-amber-300/40 to-orange-500/40 text-amber-100",
+      Silver: "from-slate-200/40 to-slate-400/40 text-slate-100",
+      Gold: "from-yellow-300/40 to-amber-500/40 text-yellow-100",
+    }),
+    []
+  );
 
-  const fetchProgress = async () => {
+  const loadProgress = async (userPayload: UserData) => {
+    setProgressLoading(true);
+    setProgressError(null);
     try {
-      const res = await axios.get('/api/quiz/progress');
-      setProgress(res.data);
-    } catch {
-      // If unauthorized or error, just ignore (guest mode)
+      const query = new URLSearchParams({
+        name: userPayload.name,
+        email: userPayload.email,
+      }).toString();
+      const res = await fetch(`/api/progress/${userPayload._id}?${query}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to load progress");
+      const data = await res.json();
+      setProgress(data);
+    } catch (error) {
+      setProgressError("Unable to load progress right now.");
     } finally {
-      setLoading(false);
+      setProgressLoading(false);
     }
   };
 
-  const currentModuleId = 1; // Currently we only have one quiz active in this demo
-  const isModuleUnlocked = (id: number) => {
-    if (id === 1) return true; // First module always unlocked
-    // Check if previous module is completed
-    const prev = progress.find(p => p.moduleId === id - 1);
-    return prev?.completed;
+  const completeLevel = async (level: number) => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/complete-level", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ userId: user._id, completedLevel: level }),
+      });
+      if (!res.ok) throw new Error("Failed to update progress");
+      const data = await res.json();
+      setProgress(data);
+    } catch (error) {
+      setProgressError("Progress update failed.");
+    }
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setProgressLoading(true);
+      try {
+        const res = await fetch("/api/current_user", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to load user");
+        const data = await res.json();
+        if (data && data._id) {
+          setUser({ _id: data._id, name: data.name, email: data.email });
+          await loadProgress({ _id: data._id, name: data.name, email: data.email });
+        } else {
+          setUser(null);
+          setProgress(null);
+        }
+      } catch (error) {
+        setUser(null);
+        setProgressError("Login required to load dashboard.");
+      } finally {
+        setProgressLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleAnswer = (index: number) => {
     if (selectedOption !== null) return;
@@ -83,13 +149,9 @@ const CosmicClassroom: React.FC = () => {
     setShowQuiz(false);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#05070a] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
-      </div>
-    )
-  }
+  const currentLevel = progress?.currentLevel ?? 1;
+  const completedLevels = progress?.completedLevels ?? [];
+  const progressPercent = Math.min(100, (completedLevels.length / 3) * 100);
 
   return (
     <div className="min-h-screen bg-[#05070a] text-white pt-24 pb-20 px-4 font-sans selection:bg-cyan-500/30">
@@ -108,37 +170,24 @@ const CosmicClassroom: React.FC = () => {
           {t("Return to Dashboard")}
         </Link>
 
-        {/* MAIN HUD */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-          {/* LEFT COLUMN - HEADER & PATH */}
-          <div className="lg:col-span-8 space-y-8">
-
-            {/* HERO HEADER */}
-            <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
-              <div className="absolute top-0 right-0 p-32 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none" />
-
-              <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 p-[2px] shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-                  <div className="w-full h-full bg-black rounded-2xl flex items-center justify-center">
-                    <GraduationCap className="text-white" size={40} />
-                  </div>
-                </div>
-                <div className="text-center md:text-left">
-                  <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-2">
-                    {t("Cosmic")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">{t("Classroom")}</span>
-                  </h1>
-                  <p className="text-white/60 text-lg max-w-lg">{t("Master orbital mechanics and space history through interactive simulations.")}</p>
-
-                  <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
-                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-cyan-300 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      {t("Live Simulation Active")}
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/60">
-                      {t("Cadet Level 1")}
-                    </div>
-                  </div>
+        {/* HUD HEADER */}
+        <header className="mb-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 backdrop-blur-md">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-6 text-left w-full">
+              <div className="w-20 h-20 rounded-2xl border-2 border-cyan-500/50 flex items-center justify-center bg-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                <GraduationCap className="text-cyan-400" size={40} />
+              </div>
+              <div>
+                <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
+                  Cosmic <span className="text-cyan-500">Classroom</span>
+                </h1>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-400/20 uppercase">
+                    {user ? "Mission Ready" : "Anonymous Guest Mode"}
+                  </span>
+                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">
+                    {user ? "PROFILE_SYNCED" : "CADET_04_SIGNAL_STABLE"}
+                  </span>
                 </div>
               </div>
             </header>
@@ -151,61 +200,120 @@ const CosmicClassroom: React.FC = () => {
                 </h3>
                 <span className="text-xs text-white/40 uppercase tracking-widest">{t("Sector A-1")}</span>
               </div>
+            </div>
+          </div>
+        </header>
 
-              <div className="space-y-4">
-                {TRAINING_SECTORS.map((item, i) => {
-                  const moduleId = i + 1;
-                  const isUnlocked = isModuleUnlocked(moduleId);
-                  const moduleProgress = progress.find(p => p.moduleId === moduleId);
-                  const isCompleted = moduleProgress?.completed;
+        {/* COSMIC CLASSROOM DASHBOARD */}
+        <section className="mb-8 grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-6">
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 flex items-center justify-center">
+                <GraduationCap className="text-cyan-300" size={28} />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Profile</p>
+                <h3 className="text-lg font-bold text-white">
+                  {user?.name || "Guest Explorer"}
+                </h3>
+                <p className="text-xs text-slate-400">{user?.email || "Sign in to sync progress"}</p>
+              </div>
+            </div>
 
-                  return (
-                    <div key={i} className={`group relative overflow-hidden rounded-3xl border p-1 transition-all duration-300
-                                    ${isUnlocked
-                        ? 'bg-gradient-to-r from-white/10 to-white/5 border-white/10 hover:border-cyan-500/50'
-                        : 'bg-black/40 border-white/5 grayscale opacity-60'
-                      }
-                                `}>
-                      <div className={`relative rounded-[20px] p-6 h-full flex flex-col md:flex-row items-start md:items-center gap-6 
-                                        ${isUnlocked ? 'bg-[#0B0E14]' : 'bg-transparent'}
-                                    `}>
-                        {/* Status Icon */}
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold border
-                                            ${isCompleted
-                            ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                            : isUnlocked
-                              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
-                              : 'bg-white/5 border-white/5 text-white/30'
-                          }
-                                        `}>
-                          {isCompleted ? <CheckCircle2 size={24} /> : isUnlocked ? <span>0{moduleId}</span> : <Lock size={20} />}
-                        </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                Status: {progress?.status || "Locked"}
+              </span>
+              <span
+                className={`rounded-full border border-white/10 bg-gradient-to-r ${
+                  badgeStyles[progress?.badge || "None"]
+                } px-3 py-1 text-[10px] uppercase tracking-[0.2em]`}
+              >
+                Badge: {progress?.badge || "None"}
+              </span>
+            </div>
 
-                        <div className="flex-1">
-                          <h4 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">{t(item.t)}</h4>
-                          <p className="text-sm text-white/50 mt-1 max-w-xl">{t(item.d)}</p>
-                        </div>
+            {progressError && (
+              <div className="mt-4 text-xs text-rose-300">{progressError}</div>
+            )}
+          </div>
 
-                        <div className="md:text-right">
-                          {isUnlocked ? (
-                            <button
-                              onClick={() => moduleId === 1 && setShowQuiz(true)} // Only mod 1 active for demo
-                              className={`px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all
-                                                        ${isCompleted
-                                  ? 'bg-white/5 text-white/50 hover:bg-white/10'
-                                  : 'bg-cyan-500 text-black hover:bg-cyan-400 hover:scale-105 shadow-lg shadow-cyan-500/25'
-                                }
-                                                    `}
-                            >
-                              {isCompleted ? t("Review") : t("Start Mission")}
-                            </button>
-                          ) : (
-                            <div className="px-6 py-3 rounded-xl bg-white/5 text-white/30 text-xs font-bold uppercase tracking-wider border border-white/5">
-                              {t("Locked")}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Progress</p>
+              <span className="text-xs text-slate-400">{completedLevels.length}/3 Levels</span>
+            </div>
+            <div className="mt-4 h-3 rounded-full bg-white/10 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+              {["Bronze", "Silver", "Gold"].map((badge) => (
+                <div
+                  key={badge}
+                  className={`rounded-2xl border border-white/10 bg-white/5 py-3 text-xs uppercase tracking-[0.2em] ${
+                    progress?.badge === badge ? "text-cyan-200" : "text-slate-500"
+                  }`}
+                >
+                  {badge}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Levels</p>
+              <span className="text-xs text-slate-400">Unlock sequentially</span>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[1, 2, 3].map((level) => {
+                const unlocked = level <= currentLevel;
+                const completed = completedLevels.includes(level);
+                return (
+                  <button
+                    key={level}
+                    onClick={() => unlocked && setShowQuiz(true)}
+                    disabled={!unlocked || progressLoading}
+                    className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${
+                      completed
+                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
+                        : unlocked
+                          ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
+                          : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold">Level {level}</span>
+                      {completed ? <CheckCircle2 className="text-cyan-300" size={18} /> : <Lock size={18} />}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-400">
+                      {completed ? "Completed" : unlocked ? "Unlocked" : "Locked"}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* TRAINING SECTORS */}
+          <div className="lg:col-span-8 space-y-6">
+            <section className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 h-full">
+              <h3 className="text-xl font-bold flex items-center gap-3 mb-10 text-white">
+                <MapIcon className="text-cyan-400" /> Sector Training Path
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {TRAINING_SECTORS.map((item, i) => (
+                  <div key={i} className={`p-6 rounded-3xl border transition-all ${item.s === 'Active' ? 'bg-cyan-500/5 border-cyan-500/30 hover:border-cyan-400 cursor-pointer' : 'bg-white/5 border-white/5 opacity-40'}`}>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${item.s === 'Active' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500'}`}>0{i + 1}</div>
+                      {item.s === 'Active' ? <CheckCircle2 className="text-cyan-400" size={18} /> : <Lock size={18} />}
                     </div>
                   );
                 })}
@@ -236,6 +344,23 @@ const CosmicClassroom: React.FC = () => {
                   </div>
                   <div className="text-[10px] uppercase text-white/40 font-bold">{t("XP Earned")}</div>
                 </div>
+                <h3 className="text-2xl font-black text-white italic mb-2">DAILY CHALLENGE</h3>
+                <p className="text-slate-400 text-sm mb-10">Test your cosmic IQ and earn your first Pilot badge today.</p>
+                {user ? (
+                  <button
+                    onClick={() => setShowQuiz(true)}
+                    className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
+                  >
+                    Launch Quiz
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="w-full py-5 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-slate-900/30"
+                  >
+                    Sign In to Start
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -361,14 +486,29 @@ const CosmicClassroom: React.FC = () => {
                     <RotateCcw size={16} /> {t("Replay Simulation")}
                   </button>
                 </div>
-              )}
-            </div>
+                <h2 className="text-4xl font-black text-white mb-4 italic">WOOHOO! YOU DID IT!</h2>
+                <p className="text-slate-400 mb-10">Session result: <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> accuracy.</p>
 
-            {/* DECORATIVE BG FOR MODAL */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-[80px]" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 blur-[80px]" />
-            </div>
+                {user ? (
+                  <button
+                    onClick={async () => {
+                      await completeLevel(currentLevel);
+                      resetQuiz();
+                    }}
+                    className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
+                  >
+                    Record Level {currentLevel} Completion <RotateCcw size={20} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={resetQuiz}
+                    className="w-full py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase flex items-center justify-center gap-3"
+                  >
+                    Sign in to Save Progress <RotateCcw size={20} />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
