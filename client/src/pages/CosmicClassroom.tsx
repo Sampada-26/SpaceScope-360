@@ -34,39 +34,23 @@ const CosmicClassroom: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
-  const [user, setUser] = useState<UserData | null>(null);
-  const [progress, setProgress] = useState<ProgressData | null>(null);
-  const [progressLoading, setProgressLoading] = useState(true);
-  const [progressError, setProgressError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<ProgressItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const badgeStyles = useMemo(
-    () => ({
-      None: "from-slate-700/60 to-slate-500/60 text-slate-200",
-      Bronze: "from-amber-300/40 to-orange-500/40 text-amber-100",
-      Silver: "from-slate-200/40 to-slate-400/40 text-slate-100",
-      Gold: "from-yellow-300/40 to-amber-500/40 text-yellow-100",
-    }),
-    []
-  );
+  // Fetch Progress on Mount
+  useEffect(() => {
+    setLoading(false);
+    fetchProgress();
+  }, []);
 
   const loadProgress = async (userPayload: UserData) => {
     setProgressLoading(true);
     setProgressError(null);
     try {
-      const query = new URLSearchParams({
-        name: userPayload.name,
-        email: userPayload.email,
-      }).toString();
-      const res = await fetch(`/api/progress/${userPayload._id}?${query}`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to load progress");
-      const data = await res.json();
-      setProgress(data);
-    } catch (error) {
-      setProgressError("Unable to load progress right now.");
-    } finally {
-      setProgressLoading(false);
+      const res = await axios.get('/api/quiz/progress', { timeout: 3000 });
+      setProgress(res.data);
+    } catch {
+      // If unauthorized or error, just ignore (guest mode)
     }
   };
 
