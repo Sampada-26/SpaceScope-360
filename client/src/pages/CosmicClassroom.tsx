@@ -1,8 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock } from 'lucide-react';
 import { QUIZ_QUESTIONS, TRAINING_SECTORS } from '../data/cosmicClassroomData';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+
+type ProgressData = {
+  userId: string;
+  name: string;
+  email: string;
+  currentLevel: number;
+  completedLevels: number[];
+  badge: string;
+  status: string;
+};
+
+type UserData = {
+  _id: string;
+  name: string;
+  email: string;
+};
 
 const CosmicClassroom: React.FC = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -10,6 +26,83 @@ const CosmicClassroom: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState<string | null>(null);
+
+  const badgeStyles = useMemo(
+    () => ({
+      None: "from-slate-700/60 to-slate-500/60 text-slate-200",
+      Bronze: "from-amber-300/40 to-orange-500/40 text-amber-100",
+      Silver: "from-slate-200/40 to-slate-400/40 text-slate-100",
+      Gold: "from-yellow-300/40 to-amber-500/40 text-yellow-100",
+    }),
+    []
+  );
+
+  const loadProgress = async (userPayload: UserData) => {
+    setProgressLoading(true);
+    setProgressError(null);
+    try {
+      const query = new URLSearchParams({
+        name: userPayload.name,
+        email: userPayload.email,
+      }).toString();
+      const res = await fetch(`/api/progress/${userPayload._id}?${query}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to load progress");
+      const data = await res.json();
+      setProgress(data);
+    } catch (error) {
+      setProgressError("Unable to load progress right now.");
+    } finally {
+      setProgressLoading(false);
+    }
+  };
+
+  const completeLevel = async (level: number) => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/complete-level", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ userId: user._id, completedLevel: level }),
+      });
+      if (!res.ok) throw new Error("Failed to update progress");
+      const data = await res.json();
+      setProgress(data);
+    } catch (error) {
+      setProgressError("Progress update failed.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setProgressLoading(true);
+      try {
+        const res = await fetch("/api/current_user", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to load user");
+        const data = await res.json();
+        if (data && data._id) {
+          setUser({ _id: data._id, name: data.name, email: data.email });
+          await loadProgress({ _id: data._id, name: data.name, email: data.email });
+        } else {
+          setUser(null);
+          setProgress(null);
+        }
+      } catch (error) {
+        setUser(null);
+        setProgressError("Login required to load dashboard.");
+      } finally {
+        setProgressLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleAnswer = (index: number) => {
     if (selectedOption !== null) return;
@@ -33,6 +126,10 @@ const CosmicClassroom: React.FC = () => {
     setQuizComplete(false);
     setShowQuiz(false);
   };
+
+  const currentLevel = progress?.currentLevel ?? 1;
+  const completedLevels = progress?.completedLevels ?? [];
+  const progressPercent = Math.min(100, (completedLevels.length / 3) * 100);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white pt-24 pb-20 px-4">
@@ -62,9 +159,11 @@ const CosmicClassroom: React.FC = () => {
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-400/20 uppercase">
-                    Anonymous Guest Mode
+                    {user ? "Mission Ready" : "Anonymous Guest Mode"}
                   </span>
-                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">CADET_04_SIGNAL_STABLE</span>
+                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">
+                    {user ? "PROFILE_SYNCED" : "CADET_04_SIGNAL_STABLE"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -80,6 +179,101 @@ const CosmicClassroom: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {/* COSMIC CLASSROOM DASHBOARD */}
+        <section className="mb-8 grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-6">
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 flex items-center justify-center">
+                <GraduationCap className="text-cyan-300" size={28} />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Profile</p>
+                <h3 className="text-lg font-bold text-white">
+                  {user?.name || "Guest Explorer"}
+                </h3>
+                <p className="text-xs text-slate-400">{user?.email || "Sign in to sync progress"}</p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                Status: {progress?.status || "Locked"}
+              </span>
+              <span
+                className={`rounded-full border border-white/10 bg-gradient-to-r ${
+                  badgeStyles[progress?.badge || "None"]
+                } px-3 py-1 text-[10px] uppercase tracking-[0.2em]`}
+              >
+                Badge: {progress?.badge || "None"}
+              </span>
+            </div>
+
+            {progressError && (
+              <div className="mt-4 text-xs text-rose-300">{progressError}</div>
+            )}
+          </div>
+
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Progress</p>
+              <span className="text-xs text-slate-400">{completedLevels.length}/3 Levels</span>
+            </div>
+            <div className="mt-4 h-3 rounded-full bg-white/10 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+              {["Bronze", "Silver", "Gold"].map((badge) => (
+                <div
+                  key={badge}
+                  className={`rounded-2xl border border-white/10 bg-white/5 py-3 text-xs uppercase tracking-[0.2em] ${
+                    progress?.badge === badge ? "text-cyan-200" : "text-slate-500"
+                  }`}
+                >
+                  {badge}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-[0_20px_60px_rgba(2,6,23,0.4)]">
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Levels</p>
+              <span className="text-xs text-slate-400">Unlock sequentially</span>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[1, 2, 3].map((level) => {
+                const unlocked = level <= currentLevel;
+                const completed = completedLevels.includes(level);
+                return (
+                  <button
+                    key={level}
+                    onClick={() => unlocked && setShowQuiz(true)}
+                    disabled={!unlocked || progressLoading}
+                    className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${
+                      completed
+                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
+                        : unlocked
+                          ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
+                          : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold">Level {level}</span>
+                      {completed ? <CheckCircle2 className="text-cyan-300" size={18} /> : <Lock size={18} />}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-400">
+                      {completed ? "Completed" : unlocked ? "Unlocked" : "Locked"}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -114,12 +308,21 @@ const CosmicClassroom: React.FC = () => {
                 </div>
                 <h3 className="text-2xl font-black text-white italic mb-2">DAILY CHALLENGE</h3>
                 <p className="text-slate-400 text-sm mb-10">Test your cosmic IQ and earn your first Pilot badge today.</p>
-                <button
-                  onClick={() => setShowQuiz(true)}
-                  className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
-                >
-                  Launch Quiz
-                </button>
+                {user ? (
+                  <button
+                    onClick={() => setShowQuiz(true)}
+                    className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
+                  >
+                    Launch Quiz
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="w-full py-5 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-slate-900/30"
+                  >
+                    Sign In to Start
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -195,12 +398,24 @@ const CosmicClassroom: React.FC = () => {
                 <h2 className="text-4xl font-black text-white mb-4 italic">WOOHOO! YOU DID IT!</h2>
                 <p className="text-slate-400 mb-10">Session result: <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> accuracy.</p>
 
-                <button
-                  onClick={resetQuiz}
-                  className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
-                >
-                  Return to Flight Deck <RotateCcw size={20} />
-                </button>
+                {user ? (
+                  <button
+                    onClick={async () => {
+                      await completeLevel(currentLevel);
+                      resetQuiz();
+                    }}
+                    className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
+                  >
+                    Record Level {currentLevel} Completion <RotateCcw size={20} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={resetQuiz}
+                    className="w-full py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase flex items-center justify-center gap-3"
+                  >
+                    Sign in to Save Progress <RotateCcw size={20} />
+                  </button>
+                )}
               </div>
             )}
           </div>

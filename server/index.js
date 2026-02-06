@@ -7,6 +7,7 @@ require("dotenv").config();
 
 // Models & Services
 require("./models/User");
+require("./models/UserProgress");
 require("./config/passport");
 
 const connectDB = require("./config/db");
@@ -41,10 +42,15 @@ app.use((req, res, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 require("./routes/auth")(app);
+require("./routes/progress")(app);
 
 app.get("/api/health", (_, res) => {
   res.json({ ok: true, service: "SpaceScope-360 API" });
