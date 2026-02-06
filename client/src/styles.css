@@ -79,6 +79,14 @@ body {
   animation: star-drift 18s linear infinite;
 }
 
+.cloud-drift {
+  animation: cloud-drift linear infinite;
+}
+
+.cloud-drift-reverse {
+  animation: cloud-drift-reverse linear infinite;
+}
+
 @keyframes star-drift {
   0% {
     transform: translateY(0px);
@@ -90,6 +98,30 @@ body {
 
   100% {
     transform: translateY(0px);
+  }
+}
+
+@keyframes cloud-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(14px, -8px, 0) scale(1.03);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes cloud-drift-reverse {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-12px, 6px, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 

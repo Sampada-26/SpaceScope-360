@@ -181,9 +181,10 @@ function ConstellationModel({
 export default function Constellations() {
   const { t } = useUi();
 
-  const [query, setQuery] = useState("");
+  const defaultConstellation = "Orion";
+  const [query, setQuery] = useState(defaultConstellation);
   const [selectedStarId, setSelectedStarId] = useState<string | null>(null);
-  const [selectedConstellation, setSelectedConstellation] = useState<string | null>(null);
+  const [selectedConstellation, setSelectedConstellation] = useState<string | null>(defaultConstellation);
 
   const activeConstellation = useMemo(
     () => constellations.find((item) => item.name === selectedConstellation) || null,
@@ -196,7 +197,7 @@ export default function Constellations() {
     return constellations.find((item) => item.name.toLowerCase().includes(cleaned)) || null;
   }, [query]);
 
-  const detail = matchedConstellation || null;
+  const detail = activeConstellation || matchedConstellation || null;
 
   useEffect(() => {
     if (matchedConstellation) {
@@ -278,11 +279,6 @@ export default function Constellations() {
               </Canvas>
             </div>
 
-            {!activeConstellation && (
-              <div className="absolute inset-0 flex items-center justify-center text-sm text-white/60">
-                {t("Search a constellation to load the structure")}
-              </div>
-            )}
             {activeStar && (
               <div className="absolute right-6 bottom-6 glass rounded-2xl p-4 w-[220px] border border-white/10">
                 <div className="text-sm font-semibold">{activeStar.name}</div>
