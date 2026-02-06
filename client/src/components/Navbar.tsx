@@ -5,7 +5,7 @@ import GlassButton from "./GlassButton";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const { language, setLanguage, theme, toggleTheme, t } = useUi();
+  const { language, setLanguage, t } = useUi();
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">

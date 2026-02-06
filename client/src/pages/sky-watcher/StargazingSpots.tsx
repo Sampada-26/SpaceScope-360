@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MapPin, Search } from "lucide-react";
+import { MapPin } from "lucide-react";
 import worldMap from "../../assets/world-map.svg";
 import Footer from "../../components/Footer";
 import { useUi } from "../../context/UiContext";

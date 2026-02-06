@@ -642,7 +642,7 @@ export default function Missions() {
                 </div>
               </div>
 
-              {cards.map((mission, index) => (
+              {cards.map((mission) => (
                 <div
                   key={mission.title}
                   className="grid items-start gap-6 md:grid-cols-[1fr_auto_1fr]"
