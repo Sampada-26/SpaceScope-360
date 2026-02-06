@@ -555,7 +555,13 @@ export default function Landing() {
                     )}
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
-                    <PrimaryButton>{t("Join Now")}</PrimaryButton>
+                    <a
+                      href="https://discord.gg/man39d2z"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <PrimaryButton>{t("Join Now")}</PrimaryButton>
+                    </a>
                     <a href="#modules">
                       <GhostButton>{t("Explore Modules")}</GhostButton>
                     </a>
