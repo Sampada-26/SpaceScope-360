@@ -353,7 +353,7 @@ export default function Landing() {
     },
     {
       name: t("Education Pro"),
-      price: "299",
+      price: "89",
       unit: t("/ month"),
       tag: t("Most Scalable"),
       highlighted: true,
