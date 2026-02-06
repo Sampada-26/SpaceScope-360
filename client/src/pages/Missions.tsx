@@ -380,6 +380,100 @@ const missions = [
       { label: "Samples", value: "121 g" },
     ],
   },
+  {
+    title: "SLIM",
+    year: "2024",
+    description: "JAXA’s precision lunar lander achieved a pinpoint landing on the Moon.",
+    agency: "JAXA",
+    vehicle: "H-IIA",
+    milestone: "Pinpoint landing",
+    tags: ["Lunar", "Precision", "Lander"],
+    stats: [
+      { label: "Landing", value: "Jan 20, 2024" },
+      { label: "Accuracy", value: "~10 m" },
+    ],
+  },
+  {
+    title: "IM-1 Odysseus",
+    year: "2024",
+    description:
+      "Commercial lander Odysseus made the first U.S. Moon landing since Apollo and a landmark private landing.",
+    agency: "Intuitive Machines / NASA",
+    vehicle: "Falcon 9",
+    milestone: "Commercial lunar landing",
+    tags: ["Lunar", "Commercial", "South pole"],
+    stats: [
+      { label: "Landing", value: "Feb 22, 2024" },
+      { label: "NASA payloads", value: "6" },
+    ],
+  },
+  {
+    title: "EarthCARE (Hakuryu)",
+    year: "2024",
+    description:
+      "ESA/JAXA climate mission launched to study clouds, aerosols, and Earth’s radiation balance.",
+    agency: "ESA / JAXA",
+    vehicle: "Falcon 9",
+    milestone: "Climate observatory",
+    tags: ["Earth science", "Climate", "Radar + Lidar"],
+    stats: [
+      { label: "Launch", value: "May 29, 2024" },
+      { label: "Site", value: "Vandenberg" },
+    ],
+  },
+  {
+    title: "Chang'e 6",
+    year: "2024",
+    description: "Returned the first-ever samples from the Moon’s far side to Earth.",
+    agency: "CNSA",
+    vehicle: "Long March 5",
+    milestone: "Far-side samples",
+    tags: ["Lunar", "Sample return"],
+    stats: [
+      { label: "Launch", value: "May 3, 2024" },
+      { label: "Return", value: "Jun 25, 2024" },
+    ],
+  },
+  {
+    title: "Starliner Crew Flight Test",
+    year: "2024",
+    description: "Boeing’s Starliner completed its first crewed flight to the ISS.",
+    agency: "NASA / Boeing",
+    vehicle: "Atlas V",
+    milestone: "Crewed Starliner",
+    tags: ["Crewed", "ISS"],
+    stats: [
+      { label: "Launch", value: "Jun 5, 2024" },
+      { label: "Crew", value: "2" },
+    ],
+  },
+  {
+    title: "Europa Clipper",
+    year: "2024",
+    description: "Launched to study Europa’s habitability and icy surface in the Jupiter system.",
+    agency: "NASA",
+    vehicle: "Falcon Heavy",
+    milestone: "Europa surveyor",
+    tags: ["Jupiter", "Icy moon"],
+    stats: [
+      { label: "Launch", value: "Oct 14, 2024" },
+      { label: "Arrival", value: "2030" },
+    ],
+  },
+  {
+    title: "SPHEREx + PUNCH",
+    year: "2025",
+    description:
+      "NASA’s SPHEREx and PUNCH launched together to map the sky and study the solar wind.",
+    agency: "NASA",
+    vehicle: "Falcon 9",
+    milestone: "All-sky survey",
+    tags: ["Astrophysics", "Heliophysics"],
+    stats: [
+      { label: "Launch", value: "Mar 11, 2025" },
+      { label: "Orbit", value: "LEO" },
+    ],
+  },
 ];
 
 type MissionCardProps = {
@@ -399,21 +493,25 @@ type MissionCardProps = {
 function MissionCard({ mission }: MissionCardProps) {
   return (
     <motion.div
-      className="group relative rounded-2xl p-5 border border-cyan-200/70 bg-cyan-200/15 shadow-[0_0_55px_rgba(34,211,238,0.65)] backdrop-blur-2xl transition duration-300 hover:border-cyan-100 hover:bg-cyan-200/25 hover:shadow-[0_0_85px_rgba(34,211,238,0.9)]"
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-950/90 via-slate-900/70 to-slate-950/90 p-5 shadow-[0_14px_32px_rgba(2,6,23,0.45)] backdrop-blur-2xl transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200/30 hover:shadow-[0_18px_36px_rgba(2,6,23,0.55)]"
     >
-      <div className="absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100">
-        <div className="h-full w-full bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.3),transparent_55%)]" />
+      <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-cyan-400/10 blur-2xl transition duration-300 group-hover:bg-cyan-300/15" />
+      <div className="pointer-events-none absolute -bottom-12 right-0 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl transition duration-300 group-hover:bg-blue-400/15" />
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100">
+        <div className="h-full w-full bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.06),transparent_55%)]" />
       </div>
       <div className="relative z-10">
-        <div className="text-xs uppercase tracking-[0.3em] text-cyan-100/95">{mission.year}</div>
-        <div className="text-lg font-semibold mt-2">{mission.title}</div>
-        <p className="text-sm text-white mt-3">{mission.description}</p>
+        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-cyan-100/90">
+          {mission.year}
+        </span>
+        <div className="text-xl font-semibold mt-3 text-white">{mission.title}</div>
+        <p className="text-sm text-white/80 mt-3">{mission.description}</p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {mission.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-cyan-100/80 bg-cyan-200/25 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-50 shadow-[0_0_20px_rgba(34,211,238,0.65)]"
+              className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-100/80"
             >
               {tag}
             </span>
@@ -439,7 +537,7 @@ function MissionCard({ mission }: MissionCardProps) {
           {mission.stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl border border-cyan-100/70 bg-cyan-200/25 px-3 py-2 text-xs text-cyan-50 shadow-[0_0_26px_rgba(34,211,238,0.7)]"
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-cyan-50"
             >
               <div className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/90">
                 {stat.label}
@@ -478,7 +576,7 @@ export default function Missions() {
       { label: "Missions Tracked", value: `${missions.length}` },
       { label: "Agencies", value: "12+" },
       { label: "Destination Types", value: "Orbital / Lunar / Deep" },
-      { label: "Timeline Span", value: "1957 → 2023" },
+      { label: "Timeline Span", value: "1957 → 2025" },
     ],
     []
   );
