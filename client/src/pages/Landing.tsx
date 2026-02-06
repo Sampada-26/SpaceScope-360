@@ -262,11 +262,11 @@ export default function Landing() {
                     {t("Unified space data ")}
                   </p>
                   <h1 className="text-4xl md:text-6xl font-semibold tracking-wide text-white drop-shadow-[0_0_28px_rgba(34,211,238,0.35)]">
-                    {t("SpaceScope 360")}
+                    {t("Singularity")}
                   </h1>
                   <p className="mx-auto max-w-xl text-xs md:text-sm text-white/70">
                     {t(
-                      "SpaceScope 360 unifies scattered space data into a single, interactive ecosystem. We turn raw satellite telemetry into actionable insights for students, hobbyists, farmers, schools, NGOs, and government teams."
+                      "Singularity unifies scattered space data into a single, interactive ecosystem. We turn raw satellite telemetry into actionable insights for students, hobbyists, farmers, schools, NGOs, and government teams."
                     )}
                   </p>
                   <div className="flex items-center justify-center gap-3 pointer-events-auto">
@@ -434,7 +434,7 @@ export default function Landing() {
             <SectionTitle
               align="center"
               kicker={t("REVENUE STREAMS")}
-              title={t("How SpaceScope 360 sustains and scales")}
+              title={t("How Singularity sustains and scales")}
               desc={t(
                 "A simple set of offerings aligned to public access, education, and institutional utility."
               )}
@@ -495,7 +495,7 @@ export default function Landing() {
             <SectionTitle
               align="center"
               kicker={t("CUSTOMER SEGMENTS")}
-              title={t("Who SpaceScope 360 serves")}
+              title={t("Who Singularity serves")}
               desc={t("Designed for learning, public utility, and operational decision support.")}
             />
 
@@ -547,7 +547,7 @@ export default function Landing() {
                     {t("Join the mission")}
                   </p>
                   <h3 className="text-3xl md:text-4xl font-semibold">
-                    {t("Ready to join SpaceScope 360?")}
+                    {t("Ready to join Singularity?")}
                   </h3>
                   <p className="text-sm md:text-base text-white/70">
                     {t(
@@ -555,7 +555,13 @@ export default function Landing() {
                     )}
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
-                    <PrimaryButton>{t("Join Now")}</PrimaryButton>
+                    <a
+                      href="https://discord.gg/man39d2z"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <PrimaryButton>{t("Join Now")}</PrimaryButton>
+                    </a>
                     <a href="#modules">
                       <GhostButton>{t("Explore Modules")}</GhostButton>
                     </a>

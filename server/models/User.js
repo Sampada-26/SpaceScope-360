@@ -6,6 +6,12 @@ const userSchema = new Schema({
     displayName: String,
     email: String,
     avatar: String,
+    quizProgress: [{
+        moduleId: Number, // 1-based index or ID
+        score: Number,
+        completed: Boolean,
+        unlockedAt: { type: Date, default: Date.now }
+    }],
     createdAt: { type: Date, default: Date.now },
 });
 

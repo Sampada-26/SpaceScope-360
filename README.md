@@ -1,9 +1,10 @@
-# SpaceScope 360
+# Singularity
 
-## 📂 Project Structure
+## Project Structure
+The project is divided into two main parts: client and server.
 
 ```text
-SpaceScope-360/
+Singularity/
 ├── client/                  # Frontend (React + Vite + TS)
 │   ├── src/
 │   │   ├── components/      # Reusable UI elements (Buttons, Cards, Globe)

@@ -26,7 +26,7 @@ const Login = () => {
                 <div className="mb-8">
                     <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-glow mb-4" />
                     <h2 className="text-3xl font-bold tracking-tight mb-2">{t("Welcome Back")}</h2>
-                    <p className="text-white/60">{t("Access the SpaceScope Command Center")}</p>
+                    <p className="text-white/60">{t("Access the Singularity Command Center")}</p>
                 </div>
 
                 <div className="space-y-4">

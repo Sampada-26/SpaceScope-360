@@ -21,7 +21,7 @@ export default function Community() {
                 {t("COMMUNITY")}
               </p>
               <h1 className="mt-3 text-3xl md:text-4xl font-semibold">
-                {t("Join the SpaceScope community")}
+                {t("Join the Singularity community")}
               </h1>
               <p className="mt-4 text-sm md:text-base text-white/75">
                 {t(

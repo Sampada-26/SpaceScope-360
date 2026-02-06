@@ -15,11 +15,11 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-3">
           <img
             src="/textures/logo.png"
-            alt="SpaceScope 360 logo"
+            alt="Singularity logo"
             className="h-9 w-9 object-contain"
           />
           <div className="font-semibold tracking-wide">
-            SpaceScope <span className="text-white/70">360</span>
+            Singularity
           </div>
         </Link>
 

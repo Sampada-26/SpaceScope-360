@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { staticTranslations } from "../i18n/staticTranslations";
 
 type Language = "en" | "hi" | "mr";
 type Theme = "dark" | "light";
@@ -21,8 +22,9 @@ type UiContextType = {
 
 const UiContext = createContext<UiContextType | undefined>(undefined);
 
-const LANGUAGE_KEY = "spacescope.language";
-const THEME_KEY = "spacescope.theme";
+const LANGUAGE_KEY = "singularity.language";
+const THEME_KEY = "singularity.theme";
+const TRANSLATION_CACHE_KEY = "singularity.translations";
 
 export function UiProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
@@ -45,6 +47,23 @@ export function UiProvider({ children }: { children: ReactNode }) {
     const storedTheme = localStorage.getItem(THEME_KEY) as Theme | null;
     if (storedTheme === "dark" || storedTheme === "light") {
       setTheme(storedTheme);
+    }
+
+    const storedCache = localStorage.getItem(TRANSLATION_CACHE_KEY);
+    if (storedCache) {
+      try {
+        const parsed = JSON.parse(storedCache) as Record<
+          Language,
+          Record<string, string>
+        >;
+        cacheRef.current = {
+          en: parsed.en || {},
+          hi: parsed.hi || {},
+          mr: parsed.mr || {},
+        };
+      } catch {
+        // ignore bad cache
+      }
     }
   }, []);
 
@@ -73,37 +92,50 @@ export function UiProvider({ children }: { children: ReactNode }) {
   const flushTranslations = async (lang: Language, texts: string[]) => {
     const apiUrl =
       (import.meta.env.VITE_TRANSLATE_URL as string | undefined) ||
-      "/translate";
+      "https://api.mymemory.translated.net/get";
 
     const langCache = cacheRef.current[lang] || {};
-    for (const text of texts) {
-      if (langCache[text]) continue;
-      try {
-        const url = new URL(apiUrl, window.location.origin);
-        url.searchParams.set("q", text);
-        url.searchParams.set("langpair", `en|${lang}`);
+    const uncached = texts.filter((text) => !langCache[text]);
+    await Promise.all(
+      uncached.map(async (text) => {
+        try {
+          const url = new URL(apiUrl, window.location.origin);
+          url.searchParams.set("q", text);
+          url.searchParams.set("langpair", `en|${lang}`);
 
-        const res = await fetch(url.toString(), { method: "GET" });
-        if (!res.ok) {
-          const errText = await res.text();
-          console.warn("Translation request failed", res.status, errText);
-          continue;
+          const res = await fetch(url.toString(), { method: "GET" });
+          if (!res.ok) {
+            const errText = await res.text();
+            console.warn("Translation request failed", res.status, errText);
+            return;
+          }
+          const data = await res.json();
+          const translated =
+            data?.responseData?.translatedText || data?.translatedText;
+          if (typeof translated === "string" && translated) {
+            langCache[text] = translated;
+          }
+        } catch {
+          // no-op
         }
-        const data = await res.json();
-        const translated = data?.responseData?.translatedText;
-        if (typeof translated === "string" && translated) {
-          langCache[text] = translated;
-        }
-      } catch {
-        // no-op
-      }
-    }
+      })
+    );
     cacheRef.current[lang] = langCache;
+    try {
+      localStorage.setItem(
+        TRANSLATION_CACHE_KEY,
+        JSON.stringify(cacheRef.current)
+      );
+    } catch {
+      // ignore storage quota issues
+    }
     setTick((v) => v + 1);
   };
 
   const t = (text: string) => {
     if (!text || language === "en") return text;
+    const staticText = staticTranslations[language]?.[text];
+    if (staticText) return staticText;
     const cached = cacheRef.current[language]?.[text];
     if (cached) return cached;
 
@@ -116,7 +148,7 @@ export function UiProvider({ children }: { children: ReactNode }) {
         if (batch.length > 0) {
           void flushTranslations(language, batch);
         }
-      }, 200);
+      }, 50);
     }
 
     return text;
