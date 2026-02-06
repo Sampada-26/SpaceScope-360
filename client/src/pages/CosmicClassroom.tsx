@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock, ChevronRight, Star } from 'lucide-react';
 import { QUIZ_QUESTIONS, TRAINING_SECTORS } from '../data/cosmicClassroomData';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import { useUi } from "../context/UiContext";
+
+interface ProgressItem {
+  moduleId: number;
+  score: number;
+  completed: boolean;
+}
 
 const CosmicClassroom: React.FC = () => {
   const { t } = useUi();
@@ -12,6 +19,32 @@ const CosmicClassroom: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
+  const [progress, setProgress] = useState<ProgressItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch Progress on Mount
+  useEffect(() => {
+    fetchProgress();
+  }, []);
+
+  const fetchProgress = async () => {
+    try {
+      const res = await axios.get('/api/quiz/progress');
+      setProgress(res.data);
+    } catch {
+      // If unauthorized or error, just ignore (guest mode)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const currentModuleId = 1; // Currently we only have one quiz active in this demo
+  const isModuleUnlocked = (id: number) => {
+    if (id === 1) return true; // First module always unlocked
+    // Check if previous module is completed
+    const prev = progress.find(p => p.moduleId === id - 1);
+    return prev?.completed;
+  };
 
   const handleAnswer = (index: number) => {
     if (selectedOption !== null) return;
@@ -19,12 +52,26 @@ const CosmicClassroom: React.FC = () => {
     if (index === QUIZ_QUESTIONS[currentQuestion].correct) setScore(s => s + 1);
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentQuestion < QUIZ_QUESTIONS.length - 1) {
       setCurrentQuestion(c => c + 1);
       setSelectedOption(null);
     } else {
       setQuizComplete(true);
+      // Save Progress
+      const finalScore = score + (selectedOption === QUIZ_QUESTIONS[currentQuestion].correct ? 1 : 0);
+      const passed = finalScore >= (QUIZ_QUESTIONS.length * 0.6); // 60% to pass
+
+      try {
+        await axios.post('/api/quiz/progress', {
+          moduleId: currentModuleId,
+          score: finalScore,
+          passed
+        });
+        fetchProgress(); // Refresh to update locks
+      } catch (e) {
+        console.error("Failed to save progress", e);
+      }
     }
   };
 
@@ -36,178 +83,296 @@ const CosmicClassroom: React.FC = () => {
     setShowQuiz(false);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#05070a] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-[#020617] text-white pt-24 pb-20 px-4">
+    <div className="min-h-screen bg-[#05070a] text-white pt-24 pb-20 px-4 font-sans selection:bg-cyan-500/30">
       {/* Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full" />
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a2c4e] via-[#05070a] to-black opacity-60" />
+        <div className="absolute top-1/4 -left-64 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]" />
+        <div className="absolute bottom-1/4 -right-64 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen" />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
 
         {/* Back Button */}
-        <Link to="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 mb-6 transition-colors font-mono uppercase tracking-widest text-xs">
-          {t("← Return to Dashboard")}
+        <Link to="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white mb-8 transition-colors text-xs font-bold uppercase tracking-widest group">
+          <ChevronRight className="rotate-180 group-hover:-translate-x-1 transition-transform" size={14} />
+          {t("Return to Dashboard")}
         </Link>
 
-        {/* HUD HEADER */}
-        <header className="mb-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 backdrop-blur-md">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-6 text-left w-full">
-              <div className="w-20 h-20 rounded-2xl border-2 border-cyan-500/50 flex items-center justify-center bg-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-                <GraduationCap className="text-cyan-400" size={40} />
-              </div>
-              <div>
-                <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
-                  {t("Cosmic")} <span className="text-cyan-500">{t("Classroom")}</span>
-                </h1>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-400/20 uppercase">
-                    {t("Anonymous Guest Mode")}
-                  </span>
-                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">{t("CADET_04_SIGNAL_STABLE")}</span>
+        {/* MAIN HUD */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+          {/* LEFT COLUMN - HEADER & PATH */}
+          <div className="lg:col-span-8 space-y-8">
+
+            {/* HERO HEADER */}
+            <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+              <div className="absolute top-0 right-0 p-32 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none" />
+
+              <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 p-[2px] shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                  <div className="w-full h-full bg-black rounded-2xl flex items-center justify-center">
+                    <GraduationCap className="text-white" size={40} />
+                  </div>
+                </div>
+                <div className="text-center md:text-left">
+                  <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-2">
+                    {t("Cosmic")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">{t("Classroom")}</span>
+                  </h1>
+                  <p className="text-white/60 text-lg max-w-lg">{t("Master orbital mechanics and space history through interactive simulations.")}</p>
+
+                  <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
+                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-cyan-300 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      {t("Live Simulation Active")}
+                    </div>
+                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/60">
+                      {t("Cadet Level 1")}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-4 w-full md:w-auto">
-              <div className="flex-1 text-center p-3 bg-white/5 rounded-xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase">{t("Rank")}</p>
-                <p className="font-bold text-cyan-400">{t("NOVICE")}</p>
+            </header>
+
+            {/* SECTOR MAP */}
+            <section>
+              <div className="flex items-center justify-between mb-6 px-2">
+                <h3 className="text-xl font-bold flex items-center gap-3 text-white">
+                  <MapIcon className="text-cyan-400" size={20} /> {t("Training Modules")}
+                </h3>
+                <span className="text-xs text-white/40 uppercase tracking-widest">{t("Sector A-1")}</span>
               </div>
-              <div className="flex-1 text-center p-3 bg-white/5 rounded-xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase">{t("Exp")}</p>
-                <p className="font-bold text-blue-400">{t("000")}</p>
-              </div>
-            </div>
-          </div>
-        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="space-y-4">
+                {TRAINING_SECTORS.map((item, i) => {
+                  const moduleId = i + 1;
+                  const isUnlocked = isModuleUnlocked(moduleId);
+                  const moduleProgress = progress.find(p => p.moduleId === moduleId);
+                  const isCompleted = moduleProgress?.completed;
 
-          {/* TRAINING SECTORS */}
-          <div className="lg:col-span-8 space-y-6">
-            <section className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 h-full">
-              <h3 className="text-xl font-bold flex items-center gap-3 mb-10 text-white">
-                <MapIcon className="text-cyan-400" /> {t("Sector Training Path")}
-              </h3>
+                  return (
+                    <div key={i} className={`group relative overflow-hidden rounded-3xl border p-1 transition-all duration-300
+                                    ${isUnlocked
+                        ? 'bg-gradient-to-r from-white/10 to-white/5 border-white/10 hover:border-cyan-500/50'
+                        : 'bg-black/40 border-white/5 grayscale opacity-60'
+                      }
+                                `}>
+                      <div className={`relative rounded-[20px] p-6 h-full flex flex-col md:flex-row items-start md:items-center gap-6 
+                                        ${isUnlocked ? 'bg-[#0B0E14]' : 'bg-transparent'}
+                                    `}>
+                        {/* Status Icon */}
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold border
+                                            ${isCompleted
+                            ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                            : isUnlocked
+                              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                              : 'bg-white/5 border-white/5 text-white/30'
+                          }
+                                        `}>
+                          {isCompleted ? <CheckCircle2 size={24} /> : isUnlocked ? <span>0{moduleId}</span> : <Lock size={20} />}
+                        </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {TRAINING_SECTORS.map((item, i) => (
-                  <div key={i} className={`p-6 rounded-3xl border transition-all ${item.s === 'Active' ? 'bg-cyan-500/5 border-cyan-500/30 hover:border-cyan-400 cursor-pointer' : 'bg-white/5 border-white/5 opacity-40'}`}>
-                    <div className="flex justify-between items-center mb-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${item.s === 'Active' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500'}`}>0{i + 1}</div>
-                      {item.s === 'Active' ? <CheckCircle2 className="text-cyan-400" size={18} /> : <Lock size={18} />}
+                        <div className="flex-1">
+                          <h4 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">{t(item.t)}</h4>
+                          <p className="text-sm text-white/50 mt-1 max-w-xl">{t(item.d)}</p>
+                        </div>
+
+                        <div className="md:text-right">
+                          {isUnlocked ? (
+                            <button
+                              onClick={() => moduleId === 1 && setShowQuiz(true)} // Only mod 1 active for demo
+                              className={`px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all
+                                                        ${isCompleted
+                                  ? 'bg-white/5 text-white/50 hover:bg-white/10'
+                                  : 'bg-cyan-500 text-black hover:bg-cyan-400 hover:scale-105 shadow-lg shadow-cyan-500/25'
+                                }
+                                                    `}
+                            >
+                              {isCompleted ? t("Review") : t("Start Mission")}
+                            </button>
+                          ) : (
+                            <div className="px-6 py-3 rounded-xl bg-white/5 text-white/30 text-xs font-bold uppercase tracking-wider border border-white/5">
+                              {t("Locked")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-1">{t(item.t)}</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">{t(item.d)}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           </div>
 
-          {/* SIDEBAR */}
+          {/* RIGHT COLUMN - STATS & DAILY */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-gradient-to-br from-cyan-500 to-blue-800 p-[2px] rounded-[3rem]">
-              <div className="bg-slate-950 rounded-[2.9rem] p-10 text-center flex flex-col items-center">
-                <div className="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mb-6">
-                  <Zap className="text-cyan-300 animate-pulse" size={32} />
+
+            {/* PROFILE CARD */}
+            <div className="glass p-6 rounded-3xl border border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-bold text-white/80 uppercase tracking-widest">{t("Pilot Profile")}</h3>
+                <Zap className="text-yellow-400 fill-yellow-400" size={16} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center">
+                  <div className="text-3xl font-bold text-white mb-1">{progress.filter(p => p.completed).length}</div>
+                  <div className="text-[10px] uppercase text-white/40 font-bold">{t("Modules Done")}</div>
                 </div>
-                <h3 className="text-2xl font-black text-white italic mb-2">{t("DAILY CHALLENGE")}</h3>
-                <p className="text-slate-400 text-sm mb-10">{t("Test your cosmic IQ and earn your first Pilot badge today.")}</p>
-                <button
-                  onClick={() => setShowQuiz(true)}
-                  className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
-                >
-                  {t("Launch Quiz")}
-                </button>
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center">
+                  <div className="text-3xl font-bold text-cyan-400 mb-1">
+                    {progress.reduce((acc, curr) => acc + curr.score, 0) * 100}
+                  </div>
+                  <div className="text-[10px] uppercase text-white/40 font-bold">{t("XP Earned")}</div>
+                </div>
               </div>
             </div>
 
-            <div className="bg-blue-600/10 border border-blue-500/20 p-6 rounded-3xl">
-              <p className="text-[10px] text-blue-400 font-mono uppercase mb-2">{t("Space Fact")}</p>
-              <p className="text-xs text-blue-100 italic">{t("The sunset on Mars appears blue to the human eye due to the dust in the atmosphere.")}</p>
+            {/* DAILY CHALLENGE */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-700 p-8 text-center shadow-2xl">
+              <Star className="absolute top-4 right-4 text-white/20 rotate-12" size={40} />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/30">
+                <Trophy className="text-white" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">{t("Daily Challenge")}</h3>
+              <p className="text-white/70 text-sm mb-6 max-w-xs mx-auto">{t("Complete 'Orbital Basics' with 100% accuracy to earn the Sharpshooter badge.")}</p>
+              <button
+                onClick={() => setShowQuiz(true)}
+                className="w-full py-3 bg-white text-indigo-900 font-bold rounded-xl hover:bg-indigo-50 transition-colors shadow-lg"
+              >
+                {t("Accept Challenge")}
+              </button>
             </div>
+
           </div>
+
         </div>
       </div>
 
-      {/* QUIZ SYSTEM MODAL */}
+      {/* QUIZ MODAL OVERLAY */}
       {showQuiz && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/95 backdrop-blur-3xl p-4">
-          <div className="relative w-full max-w-2xl bg-slate-900 border border-cyan-500/30 rounded-[3rem] p-10 md:p-14 shadow-2xl shadow-cyan-500/10">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={() => setShowQuiz(false)} />
 
-            {!quizComplete ? (
-              <div className="animate-in slide-in-from-bottom-8 duration-500">
-                <div className="flex justify-between items-center mb-10">
-                  <span className="text-cyan-300 font-mono text-xs uppercase tracking-widest">{t("Question")} {currentQuestion + 1} / {QUIZ_QUESTIONS.length}</span>
-                  <button onClick={() => setShowQuiz(false)} className="text-slate-600 hover:text-white">✕</button>
-                </div>
+          <div className="relative w-full max-w-3xl bg-[#0B0E14] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl shadow-cyan-500/10 animate-in zoom-in-95 duration-300">
+            {/* QUIZ CONTENT */}
+            <div className="p-8 md:p-12 relative z-10">
 
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-10 leading-snug">
-                  {t(QUIZ_QUESTIONS[currentQuestion].question)}
-                </h2>
-
-                <div className="grid grid-cols-1 gap-4">
-                  {QUIZ_QUESTIONS[currentQuestion].options.map((opt, i) => {
-                    const isAnswered = selectedOption !== null;
-                    const isCorrect = i === QUIZ_QUESTIONS[currentQuestion].correct;
-                    const isSelected = i === selectedOption;
-
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => handleAnswer(i)}
-                        disabled={isAnswered}
-                        className={`w-full p-6 rounded-2xl border text-left transition-all duration-300 flex justify-between items-center
-                          ${!isAnswered ? 'border-white/10 bg-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/5' : ''}
-                          ${isAnswered && isCorrect ? 'border-cyan-500 bg-cyan-500/20 text-cyan-100' : ''}
-                          ${isAnswered && isSelected && !isCorrect ? 'border-red-500 bg-red-500/20 text-red-100' : ''}
-                          ${isAnswered && !isCorrect && !isSelected ? 'opacity-30' : ''}
-                        `}
-                      >
-                        <span className="font-bold">{t(opt)}</span>
-                        {isAnswered && isCorrect && <CheckCircle2 className="text-cyan-400" />}
-                        {isAnswered && isSelected && !isCorrect && <XCircle className="text-red-500" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {selectedOption !== null && (
-                  <div className="mt-10 animate-in zoom-in-95">
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5 mb-6">
-                      <p className="text-sm text-slate-300 italic"><span className="text-cyan-300 font-bold mr-2">{t("FEEDBACK:")}</span> {t(QUIZ_QUESTIONS[currentQuestion].fact)}</p>
+              {!quizComplete ? (
+                <>
+                  <div className="flex justify-between items-center mb-8">
+                    <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/10 text-xs font-mono text-cyan-400">
+                      {t("QUESTION")} {currentQuestion + 1} <span className="text-white/40">/ {QUIZ_QUESTIONS.length}</span>
                     </div>
-                    <button
-                      onClick={nextStep}
-                      className="w-full py-5 bg-white text-slate-950 font-black rounded-2xl hover:bg-cyan-300 transition-colors uppercase"
-                    >
-                      {currentQuestion === QUIZ_QUESTIONS.length - 1 ? t("Get Results") : t("Next Question")}
-                    </button>
+                    <button onClick={() => setShowQuiz(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/60 transition">✕</button>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center animate-in zoom-in-95">
-                <div className="w-24 h-24 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-cyan-500/40">
-                  <Trophy className="text-cyan-300 animate-bounce" size={48} />
-                </div>
-                <h2 className="text-4xl font-black text-white mb-4 italic">{t("WOOHOO! YOU DID IT!")}</h2>
-                <p className="text-slate-400 mb-10">{t("Session result:")} <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> {t("accuracy.")}</p>
 
-                <button
-                  onClick={resetQuiz}
-                  className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
-                >
-                  {t("Return to Flight Deck")} <RotateCcw size={20} />
-                </button>
-              </div>
-            )}
+                  <div className="mb-10">
+                    <h2 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                      {t(QUIZ_QUESTIONS[currentQuestion].question)}
+                    </h2>
+                  </div>
+
+                  <div className="space-y-3">
+                    {QUIZ_QUESTIONS[currentQuestion].options.map((opt, i) => {
+                      const isAnswered = selectedOption !== null;
+                      const isCorrect = i === QUIZ_QUESTIONS[currentQuestion].correct;
+                      const isSelected = i === selectedOption;
+
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => handleAnswer(i)}
+                          disabled={isAnswered}
+                          className={`w-full p-5 rounded-xl border text-left flex justify-between items-center transition-all duration-200
+                                                ${!isAnswered
+                              ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 hover:translate-x-1'
+                              : ''
+                            }
+                                                ${isAnswered && isCorrect ? 'bg-green-500/10 border-green-500/50 text-green-300' : ''}
+                                                ${isAnswered && isSelected && !isCorrect ? 'bg-red-500/10 border-red-500/50 text-red-300' : ''}
+                                                ${isAnswered && !isCorrect && !isSelected ? 'opacity-40' : ''}
+                                            `}
+                        >
+                          <span className="font-medium">{t(opt)}</span>
+                          {isAnswered && isCorrect && <CheckCircle2 size={20} className="text-green-400" />}
+                          {isAnswered && isSelected && !isCorrect && <XCircle size={20} className="text-red-400" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {selectedOption !== null && (
+                    <div className="mt-8 pt-8 border-t border-white/10 animate-in slide-in-from-bottom-4 fade-in">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-10 h-10 rounded-full bg-blue-500/20 flex-shrink-0 flex items-center justify-center">
+                          <Zap size={20} className="text-blue-400" />
+                        </div>
+                        <p className="text-sm text-white/70 italic leading-relaxed">
+                          {t(QUIZ_QUESTIONS[currentQuestion].fact)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={nextStep}
+                        className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition-all shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center gap-2"
+                      >
+                        {currentQuestion === QUIZ_QUESTIONS.length - 1 ? t("Complete Mission") : t("Next Question")} <ChevronRight size={18} />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-32 h-32 mx-auto relative mb-8">
+                    <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full animate-pulse" />
+                    <Trophy className="w-full h-full text-cyan-400 relative z-10 drop-shadow-2xl" strokeWidth={1} />
+                  </div>
+
+                  <h2 className="text-4xl font-black text-white mb-2 tracking-tight">{t("MISSION ACCOMPLISHED")}</h2>
+                  <p className="text-white/50 text-lg mb-8">{t("You've mastered the basics of orbital flight.")}</p>
+
+                  <div className="inline-flex gap-8 mb-10 p-6 bg-white/5 rounded-2xl border border-white/10">
+                    <div>
+                      <div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t("Accuracy")}</div>
+                      <div className="text-3xl font-bold text-white">{Math.round((score / QUIZ_QUESTIONS.length) * 100)}%</div>
+                    </div>
+                    <div className="w-px bg-white/10" />
+                    <div>
+                      <div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t("XP Earned")}</div>
+                      <div className="text-3xl font-bold text-cyan-400">+{score * 100}</div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={resetQuiz}
+                    className="w-full py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/10 uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                  >
+                    <RotateCcw size={16} /> {t("Replay Simulation")}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* DECORATIVE BG FOR MODAL */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-[80px]" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 blur-[80px]" />
+            </div>
           </div>
         </div>
       )}
+
       <Footer />
     </div>
   );
