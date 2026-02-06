@@ -3,8 +3,10 @@ import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, Rota
 import { QUIZ_QUESTIONS, TRAINING_SECTORS } from '../data/cosmicClassroomData';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+import { useUi } from "../context/UiContext";
 
 const CosmicClassroom: React.FC = () => {
+  const { t } = useUi();
   const [showQuiz, setShowQuiz] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -46,7 +48,7 @@ const CosmicClassroom: React.FC = () => {
 
         {/* Back Button */}
         <Link to="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 mb-6 transition-colors font-mono uppercase tracking-widest text-xs">
-          ← Return to Dashboard
+          {t("← Return to Dashboard")}
         </Link>
 
         {/* HUD HEADER */}
@@ -58,24 +60,24 @@ const CosmicClassroom: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
-                  Cosmic <span className="text-cyan-500">Classroom</span>
+                  {t("Cosmic")} <span className="text-cyan-500">{t("Classroom")}</span>
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-400/20 uppercase">
-                    Anonymous Guest Mode
+                    {t("Anonymous Guest Mode")}
                   </span>
-                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">CADET_04_SIGNAL_STABLE</span>
+                  <span className="text-slate-500 text-[10px] font-mono tracking-widest">{t("CADET_04_SIGNAL_STABLE")}</span>
                 </div>
               </div>
             </div>
             <div className="flex gap-4 w-full md:w-auto">
               <div className="flex-1 text-center p-3 bg-white/5 rounded-xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase">Rank</p>
-                <p className="font-bold text-cyan-400">NOVICE</p>
+                <p className="text-[10px] text-slate-500 uppercase">{t("Rank")}</p>
+                <p className="font-bold text-cyan-400">{t("NOVICE")}</p>
               </div>
               <div className="flex-1 text-center p-3 bg-white/5 rounded-xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase">Exp</p>
-                <p className="font-bold text-blue-400">000</p>
+                <p className="text-[10px] text-slate-500 uppercase">{t("Exp")}</p>
+                <p className="font-bold text-blue-400">{t("000")}</p>
               </div>
             </div>
           </div>
@@ -87,7 +89,7 @@ const CosmicClassroom: React.FC = () => {
           <div className="lg:col-span-8 space-y-6">
             <section className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 h-full">
               <h3 className="text-xl font-bold flex items-center gap-3 mb-10 text-white">
-                <MapIcon className="text-cyan-400" /> Sector Training Path
+                <MapIcon className="text-cyan-400" /> {t("Sector Training Path")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -97,8 +99,8 @@ const CosmicClassroom: React.FC = () => {
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${item.s === 'Active' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500'}`}>0{i + 1}</div>
                       {item.s === 'Active' ? <CheckCircle2 className="text-cyan-400" size={18} /> : <Lock size={18} />}
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-1">{item.t}</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">{item.d}</p>
+                    <h4 className="text-lg font-bold text-white mb-1">{t(item.t)}</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">{t(item.d)}</p>
                   </div>
                 ))}
               </div>
@@ -112,20 +114,20 @@ const CosmicClassroom: React.FC = () => {
                 <div className="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mb-6">
                   <Zap className="text-cyan-300 animate-pulse" size={32} />
                 </div>
-                <h3 className="text-2xl font-black text-white italic mb-2">DAILY CHALLENGE</h3>
-                <p className="text-slate-400 text-sm mb-10">Test your cosmic IQ and earn your first Pilot badge today.</p>
+                <h3 className="text-2xl font-black text-white italic mb-2">{t("DAILY CHALLENGE")}</h3>
+                <p className="text-slate-400 text-sm mb-10">{t("Test your cosmic IQ and earn your first Pilot badge today.")}</p>
                 <button
                   onClick={() => setShowQuiz(true)}
                   className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
                 >
-                  Launch Quiz
+                  {t("Launch Quiz")}
                 </button>
               </div>
             </div>
 
             <div className="bg-blue-600/10 border border-blue-500/20 p-6 rounded-3xl">
-              <p className="text-[10px] text-blue-400 font-mono uppercase mb-2">Space Fact</p>
-              <p className="text-xs text-blue-100 italic">"The sunset on Mars appears blue to the human eye due to the dust in the atmosphere."</p>
+              <p className="text-[10px] text-blue-400 font-mono uppercase mb-2">{t("Space Fact")}</p>
+              <p className="text-xs text-blue-100 italic">{t("The sunset on Mars appears blue to the human eye due to the dust in the atmosphere.")}</p>
             </div>
           </div>
         </div>
@@ -139,12 +141,12 @@ const CosmicClassroom: React.FC = () => {
             {!quizComplete ? (
               <div className="animate-in slide-in-from-bottom-8 duration-500">
                 <div className="flex justify-between items-center mb-10">
-                  <span className="text-cyan-300 font-mono text-xs uppercase tracking-widest">Question {currentQuestion + 1} / {QUIZ_QUESTIONS.length}</span>
+                  <span className="text-cyan-300 font-mono text-xs uppercase tracking-widest">{t("Question")} {currentQuestion + 1} / {QUIZ_QUESTIONS.length}</span>
                   <button onClick={() => setShowQuiz(false)} className="text-slate-600 hover:text-white">✕</button>
                 </div>
 
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-10 leading-snug">
-                  {QUIZ_QUESTIONS[currentQuestion].question}
+                  {t(QUIZ_QUESTIONS[currentQuestion].question)}
                 </h2>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -165,7 +167,7 @@ const CosmicClassroom: React.FC = () => {
                           ${isAnswered && !isCorrect && !isSelected ? 'opacity-30' : ''}
                         `}
                       >
-                        <span className="font-bold">{opt}</span>
+                        <span className="font-bold">{t(opt)}</span>
                         {isAnswered && isCorrect && <CheckCircle2 className="text-cyan-400" />}
                         {isAnswered && isSelected && !isCorrect && <XCircle className="text-red-500" />}
                       </button>
@@ -176,13 +178,13 @@ const CosmicClassroom: React.FC = () => {
                 {selectedOption !== null && (
                   <div className="mt-10 animate-in zoom-in-95">
                     <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5 mb-6">
-                      <p className="text-sm text-slate-300 italic"><span className="text-cyan-300 font-bold mr-2">FEEDBACK:</span> {QUIZ_QUESTIONS[currentQuestion].fact}</p>
+                      <p className="text-sm text-slate-300 italic"><span className="text-cyan-300 font-bold mr-2">{t("FEEDBACK:")}</span> {t(QUIZ_QUESTIONS[currentQuestion].fact)}</p>
                     </div>
                     <button
                       onClick={nextStep}
                       className="w-full py-5 bg-white text-slate-950 font-black rounded-2xl hover:bg-cyan-300 transition-colors uppercase"
                     >
-                      {currentQuestion === QUIZ_QUESTIONS.length - 1 ? "Get Results" : "Next Question"}
+                      {currentQuestion === QUIZ_QUESTIONS.length - 1 ? t("Get Results") : t("Next Question")}
                     </button>
                   </div>
                 )}
@@ -192,14 +194,14 @@ const CosmicClassroom: React.FC = () => {
                 <div className="w-24 h-24 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-cyan-500/40">
                   <Trophy className="text-cyan-300 animate-bounce" size={48} />
                 </div>
-                <h2 className="text-4xl font-black text-white mb-4 italic">WOOHOO! YOU DID IT!</h2>
-                <p className="text-slate-400 mb-10">Session result: <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> accuracy.</p>
+                <h2 className="text-4xl font-black text-white mb-4 italic">{t("WOOHOO! YOU DID IT!")}</h2>
+                <p className="text-slate-400 mb-10">{t("Session result:")} <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> {t("accuracy.")}</p>
 
                 <button
                   onClick={resetQuiz}
                   className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
                 >
-                  Return to Flight Deck <RotateCcw size={20} />
+                  {t("Return to Flight Deck")} <RotateCcw size={20} />
                 </button>
               </div>
             )}

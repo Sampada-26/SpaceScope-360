@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Footer from "../components/Footer";
+import { useUi } from "../context/UiContext";
 
 const missions = [
   {
@@ -491,6 +492,8 @@ type MissionCardProps = {
 };
 
 function MissionCard({ mission }: MissionCardProps) {
+  const { t } = useUi();
+
   return (
     <motion.div
       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-950/90 via-slate-900/70 to-slate-950/90 p-5 shadow-[0_14px_32px_rgba(2,6,23,0.45)] backdrop-blur-2xl transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200/30 hover:shadow-[0_18px_36px_rgba(2,6,23,0.55)]"
@@ -502,10 +505,10 @@ function MissionCard({ mission }: MissionCardProps) {
       </div>
       <div className="relative z-10">
         <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-cyan-100/90">
-          {mission.year}
+          {t(mission.year)}
         </span>
-        <div className="text-xl font-semibold mt-3 text-white">{mission.title}</div>
-        <p className="text-sm text-white/80 mt-3">{mission.description}</p>
+        <div className="text-xl font-semibold mt-3 text-white">{t(mission.title)}</div>
+        <p className="text-sm text-white/80 mt-3">{t(mission.description)}</p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {mission.tags.map((tag) => (
@@ -513,23 +516,23 @@ function MissionCard({ mission }: MissionCardProps) {
               key={tag}
               className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-100/80"
             >
-              {tag}
+              {t(tag)}
             </span>
           ))}
         </div>
 
         <div className="mt-4 grid gap-2 text-xs text-white/65">
           <div className="flex items-center justify-between gap-3">
-            <span className="uppercase tracking-[0.18em] text-white/80">Agency</span>
-            <span className="text-white">{mission.agency}</span>
+            <span className="uppercase tracking-[0.18em] text-white/80">{t("Agency")}</span>
+            <span className="text-white">{t(mission.agency)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span className="uppercase tracking-[0.18em] text-white/80">Vehicle</span>
-            <span className="text-white">{mission.vehicle}</span>
+            <span className="uppercase tracking-[0.18em] text-white/80">{t("Vehicle")}</span>
+            <span className="text-white">{t(mission.vehicle)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span className="uppercase tracking-[0.18em] text-white/80">Milestone</span>
-            <span className="text-white">{mission.milestone}</span>
+            <span className="uppercase tracking-[0.18em] text-white/80">{t("Milestone")}</span>
+            <span className="text-white">{t(mission.milestone)}</span>
           </div>
         </div>
 
@@ -540,9 +543,9 @@ function MissionCard({ mission }: MissionCardProps) {
               className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-cyan-50"
             >
               <div className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/90">
-                {stat.label}
+                {t(stat.label)}
               </div>
-              <div className="mt-1 text-sm font-semibold text-cyan-50">{stat.value}</div>
+              <div className="mt-1 text-sm font-semibold text-cyan-50">{t(stat.value)}</div>
             </div>
           ))}
         </div>
@@ -552,6 +555,7 @@ function MissionCard({ mission }: MissionCardProps) {
 }
 
 export default function Missions() {
+  const { t } = useUi();
   const timelineRef = useRef<HTMLDivElement | null>(null);
 
   const { scrollYProgress } = useScroll({
@@ -573,12 +577,12 @@ export default function Missions() {
   );
   const summary = useMemo(
     () => [
-      { label: "Missions Tracked", value: `${missions.length}` },
-      { label: "Agencies", value: "12+" },
-      { label: "Destination Types", value: "Orbital / Lunar / Deep" },
-      { label: "Timeline Span", value: "1957 → 2025" },
+      { label: t("Missions Tracked"), value: `${missions.length}` },
+      { label: t("Agencies"), value: "12+" },
+      { label: t("Destination Types"), value: t("Orbital / Lunar / Deep") },
+      { label: t("Timeline Span"), value: "1957 -> 2025" },
     ],
-    []
+    [t]
   );
 
   return (
@@ -589,12 +593,12 @@ export default function Missions() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">Missions</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">{t("Missions")}</p>
             <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-cyan-200 via-blue-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,190,255,0.35)]">
-              Mission Timeline
+              {t("Mission Timeline")}
             </h1>
             <p className="text-white/70 mt-2 max-w-xl">
-              Trace humanity’s boldest missions as the timeline scrolls through time. Scroll to explore.
+              {t("Trace humanity's boldest missions as the timeline scrolls through time. Scroll to explore.")}
             </p>
           </div>
         </div>

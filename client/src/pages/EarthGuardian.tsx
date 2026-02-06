@@ -5,13 +5,7 @@ import { useMemo, useRef } from "react";
 import type { Mesh } from "three";
 import Footer from "../components/Footer";
 import GlassButton from "../components/GlassButton";
-
-const monitorStats = [
-  { label: "Climate Risk", value: "High", percent: 82, tone: "from-rose-400 to-red-500" },
-  { label: "Temperature Rise", value: "+1.2°C", percent: 68, tone: "from-amber-300 to-orange-500" },
-  { label: "Forest Loss", value: "10M ha/year", percent: 58, tone: "from-emerald-300 to-teal-500" },
-  { label: "Biodiversity Risk", value: "Critical", percent: 76, tone: "from-violet-300 to-fuchsia-500" },
-];
+import { useUi } from "../context/UiContext";
 
 const particles = Array.from({ length: 14 }, (_, index) => ({
   id: `particle-${index}`,
@@ -80,13 +74,24 @@ function EarthSphere() {
 }
 
 export default function EarthGuardian() {
+  const { t } = useUi();
+  const monitorStats = useMemo(
+    () => [
+      { label: t("Climate Risk"), value: t("High"), percent: 82, tone: "from-rose-400 to-red-500" },
+      { label: t("Temperature Rise"), value: "+1.2°C", percent: 68, tone: "from-amber-300 to-orange-500" },
+      { label: t("Forest Loss"), value: t("10M ha/year"), percent: 58, tone: "from-emerald-300 to-teal-500" },
+      { label: t("Biodiversity Risk"), value: t("Critical"), percent: 76, tone: "from-violet-300 to-fuchsia-500" },
+    ],
+    [t]
+  );
+
   const actionButtons = useMemo(
     () => [
-      { label: "Join Guardian Squad", variant: "glow" as const },
-      { label: "Take Eco Pledge", variant: "outline" as const },
-      { label: "Track Green Habits", variant: "outline" as const },
+      { label: t("Join Guardian Squad"), variant: "glow" as const },
+      { label: t("Take Eco Pledge"), variant: "outline" as const },
+      { label: t("Track Green Habits"), variant: "outline" as const },
     ],
-    []
+    [t]
   );
 
   return (
@@ -97,13 +102,14 @@ export default function EarthGuardian() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Earth Guardian</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">{t("Earth Guardian")}</p>
             <h1 className="text-4xl md:text-5xl font-semibold mt-3 bg-gradient-to-r from-emerald-200 via-cyan-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(120,220,190,0.35)]">
-              Earth Guardian
+              {t("Earth Guardian")}
             </h1>
             <p className="text-white/70 mt-2 max-w-xl">
-              Protecting Earth starts with perspective. Watch our living planet, monitor its health,
-              and join missions that safeguard the only home we have.
+              {t(
+                "Protecting Earth starts with perspective. Watch our living planet, monitor its health, and join missions that safeguard the only home we have."
+              )}
             </p>
           </div>
         </div>
@@ -114,26 +120,26 @@ export default function EarthGuardian() {
             <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
             <div className="relative z-10">
               <div className="text-xs uppercase tracking-[0.2em] text-emerald-200/70">
-                Why Protect Earth?
+                {t("Why Protect Earth?")}
               </div>
-              <h2 className="text-2xl font-semibold mt-4">Our Planet, Our Promise</h2>
+              <h2 className="text-2xl font-semibold mt-4">{t("Our Planet, Our Promise")}</h2>
               <p className="text-sm text-white/70 mt-3 leading-relaxed">
-                From orbit, Earth glows like a fragile oasis. Climate resilience, forest regeneration,
-                and sustainable innovation are our shared mission. Space-based data helps us see change
-                early, act faster, and protect life for future generations.
+                {t(
+                  "From orbit, Earth glows like a fragile oasis. Climate resilience, forest regeneration, and sustainable innovation are our shared mission. Space-based data helps us see change early, act faster, and protect life for future generations."
+                )}
               </p>
               <div className="mt-6 space-y-3 text-sm text-white/70">
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(120,230,190,0.9)]" />
-                  Climate intelligence for local action.
+                  {t("Climate intelligence for local action.")}
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(120,210,255,0.9)]" />
-                  Satellite monitoring of forests and oceans.
+                  {t("Satellite monitoring of forests and oceans.")}
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-blue-300 shadow-[0_0_10px_rgba(120,170,255,0.9)]" />
-                  Community-led sustainability missions.
+                  {t("Community-led sustainability missions.")}
                 </div>
               </div>
             </div>
@@ -183,7 +189,7 @@ export default function EarthGuardian() {
             <div className="absolute -top-16 -right-12 h-44 w-44 rounded-full bg-blue-400/20 blur-3xl" />
             <div className="relative z-10">
               <div className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
-                Planet Health Monitor
+                {t("Planet Health Monitor")}
               </div>
               <div className="mt-5 space-y-4">
                 {monitorStats.map((stat) => (
@@ -205,8 +211,9 @@ export default function EarthGuardian() {
               </div>
 
               <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
-                Live signals integrate satellite imagery, ground sensors, and AI forecasts to highlight
-                critical action zones.
+                {t(
+                  "Live signals integrate satellite imagery, ground sensors, and AI forecasts to highlight critical action zones."
+                )}
               </div>
             </div>
           </div>
