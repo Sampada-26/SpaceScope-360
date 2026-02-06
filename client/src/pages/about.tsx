@@ -101,11 +101,11 @@ export default function About() {
             {t("About Us")}
           </p>
           <h1 className="text-3xl md:text-4xl font-semibold text-white">
-            {t("Building SpaceScope 360")}
+            {t("Building Singularity")}
           </h1>
           <p className="text-sm md:text-base text-white/70">
             {t(
-              "SpaceScope 360 unifies scattered space data into a single, interactive ecosystem. We bridge the gap between scientific complexity and public utility by transforming raw satellite telemetry into actionable insights, delivered through three integrated modules."
+              "Singularity unifies scattered space data into a single, interactive ecosystem. We bridge the gap between scientific complexity and public utility by transforming raw satellite telemetry into actionable insights, delivered through three integrated modules."
             )}
           </p>
         </section>

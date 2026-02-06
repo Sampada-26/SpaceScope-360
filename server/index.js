@@ -45,9 +45,10 @@ app.use(cors());
 app.use(express.json());
 
 require("./routes/auth")(app);
+require("./routes/quiz")(app);
 
 app.get("/api/health", (_, res) => {
-  res.json({ ok: true, service: "SpaceScope-360 API" });
+  res.json({ ok: true, service: "Singularity API" });
 });
 
 app.get("/api/sky-watcher/status", (_, res) => {

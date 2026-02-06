@@ -45,7 +45,7 @@ export default function GetStarted() {
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <div className="text-2xl font-semibold text-white">
-                {t("Launch SpaceScope 360")}
+                {t("Launch Singularity")}
               </div>
 
               <p className="mt-3 text-white/70 text-sm leading-relaxed">

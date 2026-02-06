@@ -1,6 +1,7 @@
 # Singularity
 
-## 📂 Project Structure
+## Project Structure
+The project is divided into two main parts: client and server.
 
 ```text
 Singularity/
