@@ -28,7 +28,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(null);
                 return;
             }
-            const data = await res.json();
+            const text = await res.text();
+            if (!text) {
+                setUser(null);
+                return;
+            }
+            const data = JSON.parse(text);
             setUser(data || null);
         } catch (err) {
             console.error("Auth check failed", err);
