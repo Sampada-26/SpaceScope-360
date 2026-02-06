@@ -11,7 +11,7 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3">
               <img
                 src="/textures/logo.png"
                 alt="SpaceScope 360 logo"
@@ -20,7 +20,7 @@ export default function Footer() {
               <div className="font-semibold">
                 SpaceScope <span className="text-white/70">360</span>
               </div>
-            </div>
+            </Link>
 
             <p className="text-sm text-white/60">
               {t(
@@ -64,6 +64,9 @@ export default function Footer() {
             </Link>
             <Link to="/contact" className="block text-sm text-white/70 hover:text-white">
               {t("Contact")}
+            </Link>
+            <Link to="/community" className="block text-sm text-white/70 hover:text-white">
+              {t("Community")}
             </Link>
           </div>
 

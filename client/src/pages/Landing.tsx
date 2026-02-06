@@ -256,7 +256,7 @@ export default function Landing() {
           <section className="relative z-10">
             <div className="relative min-h-[75vh] pt-24 pb-10 md:pt-24">
               <EarthHero />
-              <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 md:px-10">
+              <div className="absolute inset-0 z-20 flex items-center justify-center px-6 md:px-10">
                 <div className="text-center space-y-4 md:space-y-5">
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.45em] text-white/60">
                     {t("Unified space data ")}
@@ -269,8 +269,7 @@ export default function Landing() {
                       "SpaceScope 360 unifies scattered space data into a single, interactive ecosystem. We turn raw satellite telemetry into actionable insights for students, hobbyists, farmers, schools, NGOs, and government teams."
                     )}
                   </p>
-                  <div className="flex items-center justify-center gap-3">
-                    <PrimaryButton>{t("Get Started")}</PrimaryButton>
+                  <div className="flex items-center justify-center gap-3 pointer-events-auto">
                     <a href="#modules">
                       <GhostButton>{t("Explore Modules")}</GhostButton>
                     </a>
@@ -557,7 +556,9 @@ export default function Landing() {
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
                     <PrimaryButton>{t("Join Now")}</PrimaryButton>
-                    <GhostButton>{t("Explore Modules")}</GhostButton>
+                    <a href="#modules">
+                      <GhostButton>{t("Explore Modules")}</GhostButton>
+                    </a>
                   </div>
                 </div>
               </div>
