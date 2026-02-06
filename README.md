@@ -1,12 +1,11 @@
 # Singularity
-Singularity is a modular, open-source platform for visualizing and analyzing space data.
 
 ## Project Structure
 The project is divided into two main parts: client and server.
 
 ```text
 Singularity/
-├── client/                  # React based frontend
+├── client/                  # Frontend (React + Vite + TS)
 │   ├── src/
 │   │   ├── components/      # Reusable UI elements (Buttons, Cards, Globe)
 │   │   ├── pages/           # Main Screens (SkyWatcher, Classroom, Guardian)
