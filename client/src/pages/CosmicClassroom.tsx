@@ -24,17 +24,16 @@ const CosmicClassroom: React.FC = () => {
 
   // Fetch Progress on Mount
   useEffect(() => {
+    setLoading(false);
     fetchProgress();
   }, []);
 
   const fetchProgress = async () => {
     try {
-      const res = await axios.get('/api/quiz/progress');
+      const res = await axios.get('/api/quiz/progress', { timeout: 3000 });
       setProgress(res.data);
     } catch {
       // If unauthorized or error, just ignore (guest mode)
-    } finally {
-      setLoading(false);
     }
   };
 
