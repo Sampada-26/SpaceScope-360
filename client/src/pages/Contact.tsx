@@ -48,9 +48,9 @@ export default function Contact() {
                     <p className="text-xs text-white/60">{t("Email")}</p>
                     <a
                       className="mt-2 block text-sm font-semibold text-white hover:text-cyan-200 transition"
-                      href="mailto:contact@spacescope360.com"
+                      href="mailto:contact@singularity.com"
                     >
-                      contact@spacescope360.com
+                      contact@singularity.com
                     </a>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/25 p-4">

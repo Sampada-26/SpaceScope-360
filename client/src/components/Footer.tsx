@@ -14,11 +14,11 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-3">
               <img
                 src="/textures/logo.png"
-                alt="SpaceScope 360 logo"
+                alt="Singularity logo"
                 className="h-9 w-9 object-contain"
               />
               <div className="font-semibold">
-                SpaceScope <span className="text-white/70">360</span>
+                Singularity
               </div>
             </Link>
 
@@ -29,7 +29,7 @@ export default function Footer() {
             </p>
 
             <p className="text-xs text-white/40">
-              © {new Date().getFullYear()} SpaceScope 360
+              © {new Date().getFullYear()} Singularity
             </p>
           </div>
 

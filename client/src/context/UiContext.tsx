@@ -22,9 +22,9 @@ type UiContextType = {
 
 const UiContext = createContext<UiContextType | undefined>(undefined);
 
-const LANGUAGE_KEY = "spacescope.language";
-const THEME_KEY = "spacescope.theme";
-const TRANSLATION_CACHE_KEY = "spacescope.translations";
+const LANGUAGE_KEY = "singularity.language";
+const THEME_KEY = "singularity.theme";
+const TRANSLATION_CACHE_KEY = "singularity.translations";
 
 export function UiProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
