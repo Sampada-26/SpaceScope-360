@@ -146,7 +146,7 @@ export default function Missions() {
   const lineProgressRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const lineProgress = useSpring(lineProgressRaw, { stiffness: 120, damping: 30, mass: 0.2 });
 
-  const cards = useMemo(
+  const cards = useMemo<MissionCardProps["mission"][]>(
     () =>
       missions.map((mission, index) => ({
         ...mission,

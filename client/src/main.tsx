@@ -36,34 +36,16 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/community" element={<Community />} />
               <Route path="/about" element={<About />} />
               <Route path="/missions" element={<Missions />} />
-
-<<<<<<< HEAD
-            <Route path="/get-started" element={<GetStarted />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/earth-guardian" element={<EarthGuardian />} />
-            <Route path="/missions" element={<Missions />} />
-
-            <Route path="/sky-watcher" element={<SkyWatcherLanding />} />
-            <Route path="/sky-watcher/constellations" element={<Constellations />} />
-            <Route path="/sky-watcher/stargazing-spots" element={<StargazingSpots />} />
-            <Route path="/sky-watcher/satellite-tracker" element={<SatelliteTracker />} />
-            <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-=======
               <Route path="/sky-watcher" element={<SkyWatcherLanding />} />
               <Route path="/sky-watcher/constellations" element={<Constellations />} />
               <Route path="/sky-watcher/stargazing-spots" element={<StargazingSpots />} />
               <Route path="/sky-watcher/satellite-tracker" element={<SatelliteTracker />} />
               <Route path="/cosmic-classroom" element={<CosmicClassroom />} />
+              <Route path="/earth-guardian" element={<EarthGuardian />} />
             </Route>
           </Routes>
         </AuthProvider>
       </UiProvider>
->>>>>>> b1eca064a67de893756543eae0609fda03f9d212
     </BrowserRouter>
   </StrictMode>
 );

@@ -323,16 +323,6 @@ export default function Constellations() {
                   )}
                 </p>
               </>
-            ) : (
-              <>
-                <div className="text-xl font-semibold mt-3">{t("Search a Constellation")}</div>
-                <p className="text-sm text-white/60 mt-3">
-                  {t(
-                    "Type Orion, Ursa Major, Scorpius, Cassiopeia, or Leo to reveal the constellation structure and detailed info."
-                  )}
-                </p>
-              </>
-            )}
             )}
           </div>
         </div>
