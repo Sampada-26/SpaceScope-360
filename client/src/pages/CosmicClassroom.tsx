@@ -49,17 +49,20 @@ const CosmicClassroom: React.FC = () => {
   const handleAnswer = (index: number) => {
     if (selectedOption !== null) return;
     setSelectedOption(index);
-    if (index === QUIZ_QUESTIONS[currentQuestion].correct) setScore(s => s + 1);
   };
 
   const nextStep = async () => {
+    const isCorrect = selectedOption === QUIZ_QUESTIONS[currentQuestion].correct;
+    if (isCorrect) {
+      setScore(s => s + 1);
+    }
     if (currentQuestion < QUIZ_QUESTIONS.length - 1) {
       setCurrentQuestion(c => c + 1);
       setSelectedOption(null);
     } else {
       setQuizComplete(true);
       // Save Progress
-      const finalScore = score + (selectedOption === QUIZ_QUESTIONS[currentQuestion].correct ? 1 : 0);
+      const finalScore = score + (isCorrect ? 1 : 0);
       const passed = finalScore >= (QUIZ_QUESTIONS.length * 0.6); // 60% to pass
 
       try {
