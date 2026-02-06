@@ -30,23 +30,42 @@ const CosmicClassroom: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
-  const [progress, setProgress] = useState<ProgressItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch Progress on Mount
-  useEffect(() => {
-    setLoading(false);
-    fetchProgress();
-  }, []);
+  const [user, setUser] = useState<UserData | null>(null);
+  // Initialize as null to handle loading state correctly
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState<string | null>(null);
+
+  const badgeStyles: Record<string, string> = useMemo(
+    () => ({
+      None: "from-slate-700/60 to-slate-500/60 text-slate-200",
+      Bronze: "from-amber-300/40 to-orange-500/40 text-amber-100",
+      Silver: "from-slate-200/40 to-slate-400/40 text-slate-100",
+      Gold: "from-yellow-300/40 to-amber-500/40 text-yellow-100",
+    }),
+    []
+  );
 
   const loadProgress = async (userPayload: UserData) => {
     setProgressLoading(true);
     setProgressError(null);
     try {
-      const res = await axios.get('/api/quiz/progress', { timeout: 3000 });
-      setProgress(res.data);
-    } catch {
-      // If unauthorized or error, just ignore (guest mode)
+      const query = new URLSearchParams({
+        name: userPayload.name,
+        email: userPayload.email,
+      }).toString();
+      // Use the teammate's progress API which returns the Level/Badge object
+      const res = await fetch(`/api/progress/${userPayload._id}?${query}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to load progress");
+      const data = await res.json();
+      setProgress(data);
+    } catch (error) {
+      setProgressError("Unable to load progress right now.");
+    } finally {
+      setProgressLoading(false);
     }
   };
 
@@ -271,10 +290,10 @@ const CosmicClassroom: React.FC = () => {
                     onClick={() => unlocked && setShowQuiz(true)}
                     disabled={!unlocked || progressLoading}
                     className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${completed
-                      ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
-                      : unlocked
-                        ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
-                        : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
+                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
+                        : unlocked
+                          ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
+                          : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
                       }`}
                   >
                     <div className="flex items-center justify-between">
