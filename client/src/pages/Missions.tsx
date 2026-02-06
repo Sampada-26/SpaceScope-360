@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Footer from "../components/Footer";
 
@@ -95,21 +95,58 @@ const missions = [
   },
 ];
 
+type MissionCardProps = {
+  mission: { title: string; year: string; description: string; side: "left" | "right" };
+  index: number;
+  total: number;
+  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+};
+
+function MissionCard({ mission, index, total, scrollYProgress }: MissionCardProps) {
+  const base = total > 1 ? index / (total - 1) : 0;
+  const revealStart = base;
+  const revealEnd = Math.min(1, base + 0.08);
+  const opacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 1]);
+  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [28, 0]);
+
+  return (
+    <motion.div
+      style={{ opacity, y }}
+      className="glass rounded-2xl p-5 border border-white/10 shadow-[0_0_25px_rgba(72,140,255,0.2)]"
+    >
+      <div className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">{mission.year}</div>
+      <div className="text-lg font-semibold mt-2">{mission.title}</div>
+      <p className="text-sm text-white/70 mt-3">{mission.description}</p>
+    </motion.div>
+  );
+}
+
 export default function Missions() {
   const timelineRef = useRef<HTMLDivElement | null>(null);
+  const [timelineHeight, setTimelineHeight] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: timelineRef,
     offset: ["start end", "end start"],
   });
 
-  const rocketTravel = missions.length * 140;
+  useEffect(() => {
+    if (!timelineRef.current) return;
+    const element = timelineRef.current;
+    const update = () => setTimelineHeight(element.scrollHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const rocketTravel = Math.max(0, timelineHeight - 240);
   const rocketYRaw = useTransform(scrollYProgress, [0, 1], [0, rocketTravel]);
   const rocketY = useSpring(rocketYRaw, { stiffness: 120, damping: 30, mass: 0.2 });
   const lineProgressRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const lineProgress = useSpring(lineProgressRaw, { stiffness: 120, damping: 30, mass: 0.2 });
 
-  const cards = useMemo(
+  const cards = useMemo<MissionCardProps["mission"][]>(
     () =>
       missions.map((mission, index) => ({
         ...mission,
@@ -154,22 +191,24 @@ export default function Missions() {
 
               <div className="absolute left-1/2 top-6 hidden -translate-x-1/2 md:block">
                 <motion.div style={{ y: rocketY }} className="relative">
-                  <div className="relative h-20 w-12 rounded-full bg-gradient-to-b from-white via-cyan-100 to-blue-200 shadow-[0_0_35px_rgba(120,200,255,0.65)] border border-white/40">
-                    <div className="absolute -top-4 left-1/2 h-6 w-8 -translate-x-1/2 rounded-t-full bg-gradient-to-b from-white to-cyan-100 border border-white/40" />
-                    <div className="absolute left-1/2 top-7 h-4 w-4 -translate-x-1/2 rounded-full border border-blue-200/70 bg-blue-900/70 shadow-[0_0_10px_rgba(120,200,255,0.6)]" />
-                    <div className="absolute left-1/2 top-12 h-2 w-2 -translate-x-1/2 rounded-full border border-blue-200/60 bg-blue-900/60" />
-                    <div className="absolute -left-2 top-11 h-5 w-3 -skew-y-6 rounded-l-full bg-gradient-to-b from-cyan-200 to-blue-300/70 border border-cyan-100/70" />
-                    <div className="absolute -right-2 top-11 h-5 w-3 skew-y-6 rounded-r-full bg-gradient-to-b from-cyan-200 to-blue-300/70 border border-cyan-100/70" />
+                  <div className="relative h-24 w-14 rounded-full bg-gradient-to-b from-white via-cyan-100 to-blue-200 shadow-[0_0_45px_rgba(120,200,255,0.7)] border border-white/50">
+                    <div className="absolute -top-5 left-1/2 h-7 w-9 -translate-x-1/2 rounded-t-full bg-gradient-to-b from-white to-cyan-100 border border-white/50" />
+                    <div className="absolute left-1/2 top-7 h-4 w-4 -translate-x-1/2 rounded-full border border-blue-200/80 bg-blue-900/75 shadow-[0_0_12px_rgba(120,200,255,0.7)]" />
+                    <div className="absolute left-1/2 top-12 h-2 w-2 -translate-x-1/2 rounded-full border border-blue-200/70 bg-blue-900/60" />
+                    <div className="absolute left-1/2 bottom-5 h-2 w-6 -translate-x-1/2 rounded-full bg-cyan-200/80 blur-[2px]" />
+                    <div className="absolute -left-3 top-12 h-6 w-4 -skew-y-6 rounded-l-full bg-gradient-to-b from-cyan-100 to-blue-300/80 border border-cyan-100/70 shadow-[0_0_8px_rgba(120,200,255,0.5)]" />
+                    <div className="absolute -right-3 top-12 h-6 w-4 skew-y-6 rounded-r-full bg-gradient-to-b from-cyan-100 to-blue-300/80 border border-cyan-100/70 shadow-[0_0_8px_rgba(120,200,255,0.5)]" />
+                    <div className="absolute left-1/2 -bottom-3 h-3 w-8 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-100 to-blue-200 border border-white/40" />
                   </div>
                   <motion.div
                     animate={{ scaleY: [1, 1.15, 0.95, 1] }}
                     transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -bottom-6 left-1/2 h-8 w-4 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-300 via-blue-400 to-transparent blur-[0.5px]"
+                    className="absolute -bottom-7 left-1/2 h-10 w-5 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-300 via-blue-400 to-transparent blur-[0.5px]"
                   />
                   <motion.div
                     animate={{ opacity: [0.5, 0.9, 0.4, 0.7] }}
                     transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -bottom-12 left-1/2 h-8 w-10 -translate-x-1/2 rounded-full bg-blue-400/30 blur-2xl"
+                    className="absolute -bottom-14 left-1/2 h-10 w-12 -translate-x-1/2 rounded-full bg-blue-400/35 blur-2xl"
                   />
                 </motion.div>
               </div>
@@ -181,19 +220,12 @@ export default function Missions() {
                 >
                   <div className={mission.side === "left" ? "md:pr-10" : "md:pr-10 md:opacity-0"}>
                     {mission.side === "left" && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="glass rounded-2xl p-5 border border-white/10 shadow-[0_0_25px_rgba(72,140,255,0.2)]"
-                      >
-                        <div className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">
-                          {mission.year}
-                        </div>
-                        <div className="text-lg font-semibold mt-2">{mission.title}</div>
-                        <p className="text-sm text-white/70 mt-3">{mission.description}</p>
-                      </motion.div>
+                      <MissionCard
+                        mission={mission}
+                        index={index}
+                        total={cards.length}
+                        scrollYProgress={scrollYProgress}
+                      />
                     )}
                   </div>
 
@@ -203,35 +235,23 @@ export default function Missions() {
 
                   <div className={mission.side === "right" ? "md:pl-10" : "md:pl-10 md:opacity-0"}>
                     {mission.side === "right" && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="glass rounded-2xl p-5 border border-white/10 shadow-[0_0_25px_rgba(72,140,255,0.2)]"
-                      >
-                        <div className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">
-                          {mission.year}
-                        </div>
-                        <div className="text-lg font-semibold mt-2">{mission.title}</div>
-                        <p className="text-sm text-white/70 mt-3">{mission.description}</p>
-                      </motion.div>
+                      <MissionCard
+                        mission={mission}
+                        index={index}
+                        total={cards.length}
+                        scrollYProgress={scrollYProgress}
+                      />
                     )}
                   </div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.4 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="md:hidden glass rounded-2xl p-5 border border-white/10 shadow-[0_0_25px_rgba(72,140,255,0.2)]"
-                  >
-                    <div className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">
-                      {mission.year}
-                    </div>
-                    <div className="text-lg font-semibold mt-2">{mission.title}</div>
-                    <p className="text-sm text-white/70 mt-3">{mission.description}</p>
-                  </motion.div>
+                  <div className="md:hidden">
+                    <MissionCard
+                      mission={mission}
+                      index={index}
+                      total={cards.length}
+                      scrollYProgress={scrollYProgress}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
