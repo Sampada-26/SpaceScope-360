@@ -72,6 +72,12 @@ export default function Footer() {
             <p className="text-xs text-white/60 font-semibold tracking-widest">
               {t("GET STARTED")}
             </p>
+            <Link
+              to="/get-started"
+              className="inline-flex items-center justify-center rounded-full border border-cyan-300/50 px-5 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:text-white"
+            >
+              {t("Get Started")}
+            </Link>
           </div>
 
         </div>
