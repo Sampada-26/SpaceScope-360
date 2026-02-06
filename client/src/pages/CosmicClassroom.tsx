@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock } from 'lucide-react';
+import axios from 'axios';
+import { Trophy, Zap, CheckCircle2, XCircle, GraduationCap, Map as MapIcon, RotateCcw, Lock, ChevronRight, Star } from 'lucide-react';
 import { QUIZ_QUESTIONS, TRAINING_SECTORS } from '../data/cosmicClassroomData';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import { useUi } from "../context/UiContext";
 
-interface ProgressItem {
-  moduleId: number;
-  score: number;
-  completed: boolean;
-}
-
+// Teammate's Progress Shape
 type ProgressData = {
   userId: string;
   name: string;
@@ -106,24 +102,36 @@ const CosmicClassroom: React.FC = () => {
     if (isCorrect) {
       setScore(s => s + 1);
     }
+
     if (currentQuestion < QUIZ_QUESTIONS.length - 1) {
       setCurrentQuestion(c => c + 1);
       setSelectedOption(null);
     } else {
       setQuizComplete(true);
-      // Save Progress
+
+      // Calculate FINAL score including the last question we just answered
       const finalScore = score + (isCorrect ? 1 : 0);
       const passed = finalScore >= (QUIZ_QUESTIONS.length * 0.6); // 60% to pass
 
-      try {
-        await axios.post('/api/quiz/progress', {
-          moduleId: currentModuleId,
-          score: finalScore,
-          passed
-        });
-        fetchProgress(); // Refresh to update locks
-      } catch (e) {
-        console.error("Failed to save progress", e);
+      // Update score state for UI
+      setScore(finalScore);
+
+      if (passed && user) {
+        // Use the NEW progress API to unlock the level
+        const currentLevel = progress?.currentLevel ?? 1;
+        await completeLevel(currentLevel);
+
+        // Optionally also save the granular score if we want to keep quiz logs
+        try {
+          await axios.post('/api/quiz/progress', {
+            moduleId: currentLevel,
+            score: finalScore,
+            passed
+          });
+        } catch (e) {
+          // Ignore quiz-specific error if level completion worked
+          console.warn("Could not save detailed quiz logs", e);
+        }
       }
     }
   };
@@ -177,13 +185,13 @@ const CosmicClassroom: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </header>
+            </div>
 
             {/* SECTOR MAP */}
-            <section>
-              <div className="flex items-center justify-between mb-6 px-2">
-                <h3 className="text-xl font-bold flex items-center gap-3 text-white">
-                  <MapIcon className="text-cyan-400" size={20} /> {t("Training Modules")}
+            <div className="w-full md:w-auto">
+              <div className="flex items-center justify-between md:justify-end gap-6 mb-2">
+                <h3 className="text-sm font-bold flex items-center gap-2 text-white">
+                  <MapIcon className="text-cyan-400" size={16} /> {t("Training Modules")}
                 </h3>
                 <span className="text-xs text-white/40 uppercase tracking-widest">{t("Sector A-1")}</span>
               </div>
@@ -212,9 +220,8 @@ const CosmicClassroom: React.FC = () => {
                 Status: {progress?.status || "Locked"}
               </span>
               <span
-                className={`rounded-full border border-white/10 bg-gradient-to-r ${
-                  badgeStyles[progress?.badge || "None"]
-                } px-3 py-1 text-[10px] uppercase tracking-[0.2em]`}
+                className={`rounded-full border border-white/10 bg-gradient-to-r ${badgeStyles[progress?.badge || "None"]
+                  } px-3 py-1 text-[10px] uppercase tracking-[0.2em]`}
               >
                 Badge: {progress?.badge || "None"}
               </span>
@@ -240,9 +247,8 @@ const CosmicClassroom: React.FC = () => {
               {["Bronze", "Silver", "Gold"].map((badge) => (
                 <div
                   key={badge}
-                  className={`rounded-2xl border border-white/10 bg-white/5 py-3 text-xs uppercase tracking-[0.2em] ${
-                    progress?.badge === badge ? "text-cyan-200" : "text-slate-500"
-                  }`}
+                  className={`rounded-2xl border border-white/10 bg-white/5 py-3 text-xs uppercase tracking-[0.2em] ${progress?.badge === badge ? "text-cyan-200" : "text-slate-500"
+                    }`}
                 >
                   {badge}
                 </div>
@@ -264,17 +270,16 @@ const CosmicClassroom: React.FC = () => {
                     key={level}
                     onClick={() => unlocked && setShowQuiz(true)}
                     disabled={!unlocked || progressLoading}
-                    className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${
-                      completed
-                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
-                        : unlocked
-                          ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
-                          : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
-                    }`}
+                    className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${completed
+                      ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100"
+                      : unlocked
+                        ? "border-white/10 bg-white/5 hover:border-cyan-400/40 hover:bg-cyan-500/5 text-white"
+                        : "border-white/5 bg-white/5 text-slate-500 cursor-not-allowed"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold">Level {level}</span>
-                      {completed ? <CheckCircle2 className="text-cyan-300" size={18} /> : <Lock size={18} />}
+                      {completed ? <CheckCircle2 className="text-green-400 hover:text-green-300" size={18} /> : <Lock size={18} />}
                     </div>
                     <div className="mt-1 text-xs text-slate-400">
                       {completed ? "Completed" : unlocked ? "Unlocked" : "Locked"}
@@ -302,8 +307,10 @@ const CosmicClassroom: React.FC = () => {
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${item.s === 'Active' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500'}`}>0{i + 1}</div>
                       {item.s === 'Active' ? <CheckCircle2 className="text-cyan-400" size={18} /> : <Lock size={18} />}
                     </div>
-                  );
-                })}
+                    <h4 className="text-lg font-bold text-white mb-1">{t(item.t)}</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">{t(item.d)}</p>
+                  </div>
+                ))}
               </div>
             </section>
           </div>
@@ -322,33 +329,34 @@ const CosmicClassroom: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center">
-                  <div className="text-3xl font-bold text-white mb-1">{progress.filter(p => p.completed).length}</div>
+                  <div className="text-3xl font-bold text-white mb-1">{completedLevels.length}</div>
                   <div className="text-[10px] uppercase text-white/40 font-bold">{t("Modules Done")}</div>
                 </div>
                 <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center">
                   <div className="text-3xl font-bold text-cyan-400 mb-1">
-                    {progress.reduce((acc, curr) => acc + curr.score, 0) * 100}
+                    {/* XP Logic (Placeholder) */}
+                    {completedLevels.length * 100}
                   </div>
                   <div className="text-[10px] uppercase text-white/40 font-bold">{t("XP Earned")}</div>
                 </div>
-                <h3 className="text-2xl font-black text-white italic mb-2">DAILY CHALLENGE</h3>
-                <p className="text-slate-400 text-sm mb-10">Test your cosmic IQ and earn your first Pilot badge today.</p>
-                {user ? (
-                  <button
-                    onClick={() => setShowQuiz(true)}
-                    className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
-                  >
-                    Launch Quiz
-                  </button>
-                ) : (
-                  <Link
-                    to="/login"
-                    className="w-full py-5 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-slate-900/30"
-                  >
-                    Sign In to Start
-                  </Link>
-                )}
               </div>
+              <h3 className="text-2xl font-black text-white italic mb-2 mt-6">DAILY CHALLENGE</h3>
+              <p className="text-slate-400 text-sm mb-10">Test your cosmic IQ and earn your first Pilot badge today.</p>
+              {user ? (
+                <button
+                  onClick={() => setShowQuiz(true)}
+                  className="w-full py-5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/20"
+                >
+                  Launch Quiz
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="w-full py-5 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] shadow-lg shadow-slate-900/30 text-center block"
+                >
+                  Sign In to Start
+                </Link>
+              )}
             </div>
 
             {/* DAILY CHALLENGE */}
@@ -473,29 +481,15 @@ const CosmicClassroom: React.FC = () => {
                     <RotateCcw size={16} /> {t("Replay Simulation")}
                   </button>
                 </div>
-                <h2 className="text-4xl font-black text-white mb-4 italic">WOOHOO! YOU DID IT!</h2>
-                <p className="text-slate-400 mb-10">Session result: <span className="text-cyan-300 font-bold text-xl">{score}/{QUIZ_QUESTIONS.length}</span> accuracy.</p>
+              )}
+            </div>
 
-                {user ? (
-                  <button
-                    onClick={async () => {
-                      await completeLevel(currentLevel);
-                      resetQuiz();
-                    }}
-                    className="w-full py-5 bg-cyan-500 text-slate-950 font-black rounded-2xl hover:scale-105 transition-all uppercase flex items-center justify-center gap-3"
-                  >
-                    Record Level {currentLevel} Completion <RotateCcw size={20} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={resetQuiz}
-                    className="w-full py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase flex items-center justify-center gap-3"
-                  >
-                    Sign in to Save Progress <RotateCcw size={20} />
-                  </button>
-                )}
-              </div>
-            )}
+            {/* DECORATIVE BG FOR MODAL */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-[80px]" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 blur-[80px]" />
+            </div>
+
           </div>
         </div>
       )}
