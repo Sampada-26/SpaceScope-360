@@ -47,13 +47,6 @@ export default function Navbar() {
             </select>
           </div>
 
-          <button
-            onClick={toggleTheme}
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/80 hover:bg-white/10 transition"
-          >
-            {theme === "dark" ? t("Light") : t("Dark")}
-          </button>
-
           {user ? (
             <div className="flex items-center gap-3">
               <span className="hidden sm:block text-sm text-white/70">
