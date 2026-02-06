@@ -1,9 +1,9 @@
-# SpaceScope 360
+# Singularity
 
 ## 📂 Project Structure
 
 ```text
-SpaceScope-360/
+Singularity/
 ├── client/                  # Frontend (React + Vite + TS)
 │   ├── src/
 │   │   ├── components/      # Reusable UI elements (Buttons, Cards, Globe)
