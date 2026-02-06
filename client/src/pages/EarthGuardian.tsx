@@ -73,7 +73,6 @@ function EarthSphere() {
   );
 }
 
-<<<<<<< HEAD
 type CosmicDefaults = {
   solarActivity: string;
   solarWindSpeed: string;
@@ -137,27 +136,6 @@ function SolarWindParticles() {
         lane: (index % 6) * 0.05 - 0.12,
       })),
     []
-=======
-export default function EarthGuardian() {
-  const { t } = useUi();
-  const monitorStats = useMemo(
-    () => [
-      { label: t("Climate Risk"), value: t("High"), percent: 82, tone: "from-rose-400 to-red-500" },
-      { label: t("Temperature Rise"), value: "+1.2°C", percent: 68, tone: "from-amber-300 to-orange-500" },
-      { label: t("Forest Loss"), value: t("10M ha/year"), percent: 58, tone: "from-emerald-300 to-teal-500" },
-      { label: t("Biodiversity Risk"), value: t("Critical"), percent: 76, tone: "from-violet-300 to-fuchsia-500" },
-    ],
-    [t]
-  );
-
-  const actionButtons = useMemo(
-    () => [
-      { label: t("Join Guardian Squad"), variant: "glow" as const },
-      { label: t("Take Eco Pledge"), variant: "outline" as const },
-      { label: t("Track Green Habits"), variant: "outline" as const },
-    ],
-    [t]
->>>>>>> a6bc9fc (fix)
   );
 
   useFrame(({ clock }) => {
@@ -403,7 +381,6 @@ export default function EarthGuardian() {
                 {t(
                   "Live signals integrate satellite imagery, ground sensors, and AI forecasts to highlight critical action zones."
                 )}
-<<<<<<< HEAD
               </div>
             </div>
           </div>
@@ -772,8 +749,6 @@ export default function EarthGuardian() {
                     </div>
                   </div>
                 </div>
-=======
->>>>>>> a6bc9fc (fix)
               </div>
             </div>
           </div>
